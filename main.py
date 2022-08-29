@@ -1,7 +1,7 @@
-import datetime
 import time
 import traceback
 from datetime import datetime
+from datetime import timedelta
 
 import discord
 import requests
@@ -151,7 +151,7 @@ class GetMusicURL(ui.Modal, title=get_text("modal-title-song-queue")):
                     .set_thumbnail(
                     url=f"{bot.user.avatar}").add_field(
                     name=get_text("music-bot-embed-duration"),
-                    value=f"``{str(datetime.timedelta(seconds=int(info.get('duration'))))}``").set_image(
+                    value=f"``{str(timedelta(seconds=int(info.get('duration'))))}``").set_image(
                     url=f"{info.get('thumbnail')}").add_field(name=get_text("music-bot-embed-viewer"),
                                                               value=f"``{format(info.get('view_count'), ',')}``",
                                                               inline=True).add_field(
@@ -169,7 +169,7 @@ class GetMusicURL(ui.Modal, title=get_text("modal-title-song-queue")):
 
 
 def utc_to_kst(origin_time):
-    return (origin_time + datetime.timedelta(hours=9)).strftime("%Y-%m-%d %T")
+    return (origin_time + timedelta(hours=9)).strftime("%Y-%m-%d %T")
 
 
 @sc.command(guild=discord.Object(id=guild_id), name='profile', description='대상의 프로필 정보를 확인 합니다.')
@@ -240,8 +240,8 @@ async def getFood(interaction: discord.Interaction, date: int = None):
     url = f"https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={neis_api_key}&Type=json&plndex=1&pSize=30" \
           f"&ATPT_OFCDC_SC_CODE=E10&SD_SCHUL_CODE=7310564&MLSV_YMD= "
     if date is None:
-        date = datetime.datetime.now().strftime("%Y%m%d")
-        url = url + datetime.datetime.now().strftime("%Y%m%d")
+        date = datetime.now().strftime("%Y%m%d")
+        url = url + datetime.now().strftime("%Y%m%d")
         print(url)
     else:
         fdate = str(date)
@@ -343,7 +343,7 @@ def cut_text(text: str, index: int):
 
 # 에러 처리 함수
 async def print_error(interaction: discord.Interaction, errorname: str, errorcause: str, traceback: str):
-    error_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')  # 시간을 20220828200000 식으로 문자로 저장
+    error_time = datetime.now().strftime('%Y%m%d%H%M%S')  # 시간을 20220828200000 식으로 문자로 저장
     embed = discord.Embed(title=get_text("error-embed-title"),
                           description=f"{get_text('error-embed-description-part-1')}{error_time}{get_text('error-embed-description-part-2')}",
                           color=discord.Color.red())  # 오류 메시지 만들기
@@ -402,7 +402,7 @@ async def search_book(interaction: discord.Interaction, bookname: str, page: int
                             inline=False)
             embed.set_footer(text=f"Request by {interaction.user} ・ Developed by {get_text('PART1_DEVELOPER_NAME')}",
                              icon_url=f"{interaction.user.avatar}")
-            embed.timestamp = datetime.datetime.now()
+            embed.timestamp = datetime.now()
             await interaction.response.send_message(embed=embed)
         else:
             embed = discord.Embed(title=f":book: '{bookname}' {get_text('search-book-search-no-result-1')}",
@@ -412,7 +412,7 @@ async def search_book(interaction: discord.Interaction, bookname: str, page: int
                              icon_url="https://t1.kakaocdn.net/kakaocorp/kakaocorp/admin/1b884871017800001.png")
             embed.set_footer(text=f"Request by {interaction.user} ・ Developed by {get_text('PART1_DEVELOPER_NAME')}",
                              icon_url=f"{interaction.user.avatar}")
-            embed.timestamp = datetime.datetime.now()
+            embed.timestamp = datetime.now()
             await interaction.response.send_message(embed=embed)
     except Exception as e:
         await print_error(interaction, e.__class__.__name__, str(e), str(traceback.format_exc()))
