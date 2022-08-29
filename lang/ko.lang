@@ -1,0 +1,63 @@
+embed-title-sorry: :cry:  죄송합니다!
+embed-title-success: :white_check_mark:  성공!
+embed-title-error: :skull:  오류!
+
+still-developed: 개발중인 기능입니다.<br>빠른 시일내에 개발 하겠습니다.
+song-stopped: 노래를 멈췄어요!
+song-already-stopped: 노래가 이미 멈춰있어요.
+song-resumed: 노래를 재생합니다.
+song-already-resumed: 노래가 이미 재생중입니다.
+song-skipped: 노래를 스킵 했어요!
+leave-voice-room: 보이스 채널에서 퇴장했어요.
+song-no-playing: 재생중인 노래가 없어요.
+song-want-to-listen: 노래를 듣고싶나요?<br>예약 버튼으로 듣고 싶은 노래를 예약해주세요!
+bot-request-enter-voice-channel-if-user-not-joined-voice-channel: 먼저 음성 채널에 접속해야 합니다.
+
+modal-title-song-queue: 노래 예약 폼
+modal-label-want-youtube-link: 재생을 원하는 노래의 유튜브 주소를 입력해 주세요!
+
+music-bot-embed-duration: **노래 길이**
+music-bot-embed-viewer: **조회 수**
+music-bot-embed-like: **좋아요**
+
+profile-embed-display-name: **서버에서의 별명**
+profile-embed-info: 님의 프로필 정보
+profile-embed-joined-at: 서버에 참여한 날짜
+profile-embed-is-admin: 관리자 인가요?
+
+school-meal-incorrect-date-type: 잘못된 날짜 형식입니다! (예: 20220828)
+school-meal-embed-title: 급식
+school-meal-embed-today: 일의 급식입니다!
+school-meal-embed-no: 오늘의 급식이 없습니다.
+school-meal-embed-breakfast: 조식
+school-meal-embed-lunch: 중식
+school-meal-embed-dinner: 석식
+
+search-book-value-error-1: 0 이상의 값을 입력하주세요.
+search-book-search-result: 검색 결과
+search-book-search-no-result-1: 검색 결과가 없습니다!
+search-book-search-no-result-2: 다음 검색어에 해당되는 결과가 없습니다:
+search-book-embed-author: **저자**
+search-book-embed-publisher: **출판사**
+search-book-embed-price: **가격**
+search-book-embed-published-date: 출간일**
+search-book-embed-isbn: **ISBN**
+search-book-embed-status: **상태**
+search-book-embed-book-details: **책 설명**
+
+
+error-embed-title: :skull:  오류가 발생하였습니다!
+error-embed-description-part-1: 개발자에게 문의해 주세요!<br>로그가 logs/error_
+error-embed-description-part-2: .log에 저장되었습니다.
+
+message-not-guild-6-11: , おはようございます。
+message-not-guild-12-18: , こんにちは。
+message-not-guild-19-23: , こんばんは。
+message-not-guild-else: , お休みなさい。
+
+PART1_DEVELOPER_NAME: 서현
+PART2_DEVELOPER_NAME: 동건
+PART3_DEVELOPER_NAME: 하랑
+PART4_DEVELOPER_NAME: 지민
+
+NONE: (없음)
