@@ -238,7 +238,7 @@ def no_queue():
 @sc.command(guild=discord.Object(id=guild_id), name='급식', description='인천정보과학고등학교의 급식을 받아옵니다!')
 async def getFood(interaction: discord.Interaction, date: int = None):
     url = f"https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={neis_api_key}&Type=json&plndex=1&pSize=30" \
-          f"&ATPT_OFCDC_SC_CODE=E10&SD_SCHUL_CODE=7310564&MLSV_YMD= "
+          f"&ATPT_OFCDC_SC_CODE=E10&SD_SCHUL_CODE=7310564&MLSV_YMD="
     if date is None:
         date = datetime.now().strftime("%Y%m%d")
         url = url + datetime.now().strftime("%Y%m%d")
