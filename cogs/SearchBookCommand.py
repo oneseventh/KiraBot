@@ -4,12 +4,9 @@ from datetime import datetime
 
 import nextcord
 import requests
-from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
 
-import cogs.MusicCommand
 import main
-import utils.parse_authkey
 from utils import alert, kira_language, parse_authkey
 
 
@@ -28,7 +25,7 @@ class SearchBookCommand(commands.Cog):
             page = 1  # 페이지를 1로 설정
 
         if page <= 0:  # 만약 페이지가 0이거나 0보다 작다면,
-            await interaction.response.send_message(kira_language.get_text('ko', "search-book-value-error-1"))  # 문구 출력
+            await interaction.response.send_message(kira_language.get_text("search-book-value-error-1"))  # 문구 출력
             return
 
         url = f"https://dapi.kakao.com/v3/search/book?sort=latest&page={math.ceil(page/10)}&query={bookname}"
@@ -45,47 +42,47 @@ class SearchBookCommand(commands.Cog):
             if data['meta']['total_count'] != 0:
                 if data['meta']['pageable_count'] >= 1000:
                     embed = nextcord.Embed(
-                        title=f":book: '{bookname}' {kira_language.get_text('ko', 'search-book-search-result')} **({page}/{data['meta']['pageable_count']})**",
-                        description=f"``{kira_language.get_text('ko', 'search-book-embed-field-overflowed')}``\n"
+                        title=f":book: '{bookname}' {kira_language.get_text('search-book-search-result')} **({page}/{data['meta']['pageable_count']})**",
+                        description=f"``{kira_language.get_text('search-book-embed-field-overflowed')}``\n"
                                     f"**{data['documents'][content]['title']}**", color=nextcord.Color.green())
                 else:
                     embed = nextcord.Embed(
-                        title=f":book: '{bookname}' {kira_language.get_text('ko', 'search-book-search-result')} **({page}/{data['meta']['pageable_count']})**",
+                        title=f":book: '{bookname}' {kira_language.get_text('search-book-search-result')} **({page}/{data['meta']['pageable_count']})**",
                         description=f"**{data['documents'][content]['title']}**", color=nextcord.Color.green())
                 embed.set_author(name="using Kakao API",
                                  icon_url="https://t1.kakaocdn.net/kakaocorp/kakaocorp/admin/1b884871017800001.png")
                 embed.set_thumbnail(url=f"{data['documents'][content]['thumbnail']}")
-                embed.add_field(name=kira_language.get_text('ko', "search-book-embed-field-author"),
+                embed.add_field(name=kira_language.get_text("search-book-embed-field-author"),
                                 value=f"``{data['documents'][content]['authors'][0]}``", inline=True)
-                embed.add_field(name=kira_language.get_text('ko', "search-book-embed-field-publisher"),
+                embed.add_field(name=kira_language.get_text("search-book-embed-field-publisher"),
                                 value=f"``{data['documents'][content]['publisher']}``", inline=True)
-                embed.add_field(name=kira_language.get_text('ko', "search-book-embed-field-price"),
+                embed.add_field(name=kira_language.get_text("search-book-embed-field-price"),
                                 value=f"``{data['documents'][content]['sale_price']}원 (KAKAO)``",
                                 inline=True)
-                embed.add_field(name=kira_language.get_text('ko', "search-book-embed-field-published-date"),
+                embed.add_field(name=kira_language.get_text("search-book-embed-field-published-date"),
                                 value=f"``{(data['documents'][content]['datetime'])[:data['documents'][content]['datetime'].index('T')]}``",
                                 inline=True)
-                embed.add_field(name=kira_language.get_text('ko', "search-book-embed-field-isbn"),
+                embed.add_field(name=kira_language.get_text("search-book-embed-field-isbn"),
                                 value=f"``{(data['documents'][content]['isbn'])}``",
                                 inline=True)
-                embed.add_field(name=kira_language.get_text('ko', "search-book-embed-field-status"),
+                embed.add_field(name=kira_language.get_text("search-book-embed-field-status"),
                                 value=f"``{(data['documents'][content]['status'])}``", inline=True)
-                embed.add_field(name=kira_language.get_text('ko', "search-book-embed-field-book-details"),
+                embed.add_field(name=kira_language.get_text("search-book-embed-field-book-details"),
                                 value=f"```{cut_text(data['documents'][content]['contents'], 150)}```",
                                 inline=False)
                 embed.set_footer(
-                    text=f"Request by {interaction.user} ・ Developed by {kira_language.get_text('ko', 'PART1_DEVELOPER_NAME')}",
+                    text=f"Request by {interaction.user} ・ Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
                     icon_url=f"{interaction.user.avatar}")
                 embed.timestamp = datetime.now()
                 await interaction.response.send_message(embed=embed)
             else:
-                embed = nextcord.Embed(title=f":book: '{bookname}' {kira_language.get_text('ko', 'search-book-search-no-result-1')}",
-                                      description=f"{kira_language.get_text('ko', 'search-book-search-no-result-2')} ``{bookname}``",
+                embed = nextcord.Embed(title=f":book: '{bookname}' {kira_language.get_text('search-book-search-no-result-1')}",
+                                      description=f"{kira_language.get_text('search-book-search-no-result-2')} ``{bookname}``",
                                       color=nextcord.Color.red())
                 embed.set_author(name="using Kakao API",
                                  icon_url="https://t1.kakaocdn.net/kakaocorp/kakaocorp/admin/1b884871017800001.png")
                 embed.set_footer(
-                    text=f"Request by {interaction.user} ・ Developed by {kira_language.get_text('ko', 'PART1_DEVELOPER_NAME')}",
+                    text=f"Request by {interaction.user} ・ Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
                     icon_url=f"{interaction.user.avatar}")
                 embed.timestamp = datetime.now()
                 await interaction.response.send_message(embed=embed)

@@ -22,7 +22,7 @@ class MusicCommand(commands.Cog):
             if vc is None:
                 if interaction.user.voice is None:
                     await alert.error(interaction,
-                                      kira_language.get_text('ko', "bot-request-enter-voice-"
+                                      kira_language.get_text("bot-request-enter-voice-"
                                                                    "channel-if-user-not-joined-voice-channel"))
                     return
                 else:
@@ -39,7 +39,7 @@ class MusicCommand(commands.Cog):
         else:
             if interaction.user.voice is None:
                 await alert.error(interaction,
-                                  kira_language.get_text('ko', "bot-request-enter-voice-"
+                                  kira_language.get_text("bot-request-enter-voice-"
                                                                "channel-if-user-not-joined-voice-channel"))
                 return
             else:
@@ -54,12 +54,12 @@ class EnterButton(nextcord.ui.View):
         super().__init__()
         self.interaction = interaction
 
-    @nextcord.ui.button(label=kira_language.get_text('ko', 'music-bot-button-text-reenter'),
+    @nextcord.ui.button(label=kira_language.get_text('music-bot-button-text-reenter'),
                         style=nextcord.ButtonStyle.green, emoji="✨")
     async def reenter(self, button: nextcord.Button, inter: nextcord.Interaction):
         if inter.user.voice is None:
             await inter.response.send_message(kira_language.get_text
-                                              ('ko', "bot-request-enter-voice-channel-if-user-not-joined"
+                                              (kira_language.get_current_lang(), "bot-request-enter-voice-channel-if-user-not-joined"
                                                      "-voice-channel"))
             return
         else:

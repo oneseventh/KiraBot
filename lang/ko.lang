@@ -32,9 +32,9 @@ school-meal-incorrect-date-type: 잘못된 날짜 형식입니다! (예: 2022082
 school-meal-embed-title: 급식 정보
 school-meal-embed-today: 의 급식이야!  ✨
 school-meal-embed-no-data: 의 급식 정보는 없어..  :cry:
-school-meal-embed-breakfast: 조식
+school-meal-embed-breakfast: :fork_knife_plate: 조식
 school-meal-embed-lunch: :fork_knife_plate: 중식
-school-meal-embed-dinner: 석식
+school-meal-embed-dinner: :fork_knife_plate: 석식
 school-meal-embed-kcal: 칼로리는..
 
 search-book-value-error-1: 0 이상의 값을 입력하주세요.
@@ -60,6 +60,7 @@ memo-embed-field-memo-name: 메모 이름
 memo-embed-field-memo-time: 메모한 시간
 memo-embed-field-memo-content: 메모 내용
 memo-error-name-already-exist: 동일한 이름의 메모가 이미 있어!
+memo-error-not-found: 메모를 못 찾았어..
 memo-success-write: 메모를 작성했어!
 memo-download-success: 메모 파일을 개인 DM으로 보내 줬어!<br>개인 DM을 확인 해 줘!
 memo-private-dm-message: 여기, 받아줘! 너가 부탁한 파일 맞지?

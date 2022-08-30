@@ -10,6 +10,7 @@ class PrivateDMEvent(commands.Cog):
 
     hello_msg = ["안녕", "ㅎㅇ", "하이"]
     goodnight_msg = ["잘자"]
+    community_msg = ["게이야", "우흥", "아주 빠르게"]
 
     @commands.Cog.listener()
     async def on_message(self, message):
