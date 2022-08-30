@@ -2,6 +2,7 @@ embed-title-developing: :cry:  미안해..
 embed-title-developing-info: 아직 개발중이야..! 금방 만들어 올게! ✨
 embed-title-success: :white_check_mark:  성공!
 embed-title-error: :skull:  .. 앗!
+embed-title-info: :information_source:  정보
 
 still-developed: 개발중인 기능입니다.<br>빠른 시일내에 개발 하겠습니다.
 song-stopped: 노래를 멈췄어요!
@@ -13,15 +14,16 @@ leave-voice-room: 보이스 채널에서 퇴장했어요.
 song-no-playing: 재생중인 노래가 없어요.
 song-want-to-listen: 노래를 듣고싶나요?<br>예약 버튼으로 듣고 싶은 노래를 예약해주세요!
 bot-request-enter-voice-channel-if-user-not-joined-voice-channel: 날 부르기 전에 먼저 읍성 채널에 접속 해 줘!
-
 modal-title-song-queue: 노래 예약 폼
 modal-label-want-youtube-link: 재생을 원하는 노래의 유튜브 주소를 입력해 주세요!
-
 music-bot-button-text-reenter: 돌아 와줘
-
 music-bot-embed-duration: **노래 길이**
 music-bot-embed-viewer: **조회 수**
 music-bot-embed-like: **좋아요**
+music-bot-button-play: 재생
+music-bot-button-pause: 멈춤
+music-bot-button-next: 다음
+music-bot-button-exit: 나가기
 
 profile-embed-display-name: **서버에서의 별명**
 profile-embed-info: 님의 프로필 정보
@@ -53,15 +55,17 @@ search-book-embed-field-book-details: 책 설명
 memo-button-text-download: 다운
 memo-button-text-remove: 삭제
 memo-write-modal-title: 메모 쓰기
+memo-list-info-text: ✨ 보고 싶은 메모를 목록에서 선택해 줘!
 memo-embed-title: ✨ 메모를 찾았어!
 memo-embed-description: 나에게 남겨준 메모야!
 memo-embed-field-memo-num: 메모 번호
 memo-embed-field-memo-name: 메모 이름
 memo-embed-field-memo-time: 메모한 시간
 memo-embed-field-memo-content: 메모 내용
+memo-remove-success: 메모를 깔끔하게 잊었어!
 memo-error-name-already-exist: 동일한 이름의 메모가 이미 있어!
 memo-error-not-found: 메모를 못 찾았어..
-memo-success-write: 메모를 작성했어!
+memo-success-write: 메모를 작성했어!<br>제대로 기억 해 둘게!
 memo-download-success: 메모 파일을 개인 DM으로 보내 줬어!<br>개인 DM을 확인 해 줘!
 memo-private-dm-message: 여기, 받아줘! 너가 부탁한 파일 맞지?
 

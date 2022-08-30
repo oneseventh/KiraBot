@@ -22,7 +22,7 @@ class MealCommand(commands.Cog):
     @nextcord.slash_command(name="meal", description="✨ 인천정보과학고등학교의 급식을 확인할 수 있어!", guild_ids=[guild_id])
     async def check_meal(self, interaction: Interaction,
                          date: int = nextcord.SlashOption(name="날짜", description="✨ 날짜를 입력해 줘! (예. 20220828)",
-                                                          min_value=19700101,max_value=20380119, required=False)):
+                                                          min_value=19700101, max_value=20380119, required=False)):
         url = f"https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={self.neis_api_key}" \
               "&Type=json&plndex=1&pSize=30&ATPT_OFCDC_SC_CODE=E10&SD_SCHUL_CODE=7310564&MLSV_YMD="
         if date is None:
@@ -44,10 +44,11 @@ class MealCommand(commands.Cog):
                     result_food += "- " + line[:line.index("  ")] + "\n"
                 embed = nextcord.Embed(title=kira_language.get_text("school-meal-embed-title"),
                                        description=f"``{str(date)[:4]}년 {str(date)[4:6]}월 {str(date)[6:8]}일`` " +
-                                       kira_language.get_text("school-meal-embed-today"),
+                                                   kira_language.get_text("school-meal-embed-today"),
                                        color=nextcord.Color.green())
-                embed.set_author(name=f"Request by {interaction.user}", icon_url=interaction.user.avatar)
-                embed.add_field(name=kira_language.get_text("school-meal-embed-lunch"), value=f"```{result_food}```", inline=False)
+                embed.set_author(name=f"Request by {interaction.user}", icon_url=interaction.user.display_avatar)
+                embed.add_field(name=kira_language.get_text("school-meal-embed-lunch"), value=f"```{result_food}```",
+                                inline=False)
                 embed.add_field(name=kira_language.get_text("school-meal-embed-kcal"),
                                 value=f"``{meal_data['mealServiceDietInfo'][1]['row'][0]['CAL_INFO']}``", inline=True)
                 embed.set_footer(

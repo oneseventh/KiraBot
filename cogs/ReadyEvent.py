@@ -1,6 +1,8 @@
 import nextcord
 from nextcord.ext import commands
 
+import cogs.SearchBookCommand
+
 
 class ReadyEvent(commands.Cog):
     def __init__(self, bot):
@@ -15,6 +17,7 @@ class ReadyEvent(commands.Cog):
     async def on_message(self, message):
         if message.content == "�뚯뒪��":
             print("O")
+            cogs.SearchBookCommand.cut_text()
 
 
 def setup(bot):

@@ -1,5 +1,4 @@
 import main
-from utils import alert
 
 
 class NotSupportedLanguageException(Exception):

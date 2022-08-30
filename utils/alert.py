@@ -5,6 +5,7 @@ import nextcord
 import main
 from utils import kira_language
 
+
 async def critical_error(interaction: nextcord.Interaction, errorname: str, errorcause: str, traceback: str):
     error_time = datetime.now().strftime('%Y%m%d%H%M%S')  # �쒓컙�� 20220828200000 �앹쑝濡� 臾몄옄濡� ����
     embed = nextcord.Embed(title=kira_language.get_text("error-embed-title"),
@@ -19,7 +20,7 @@ async def critical_error(interaction: nextcord.Interaction, errorname: str, erro
     embed.timestamp = datetime.now()
     with open(f"././logs/error_{error_time}.log", "w") as f:  # �ㅻ쪟 濡쒓렇 湲곕줉�� �꾪븳 �뚯씪 �닿린
         f.write(traceback)  # �뚯씪�� �ㅻ쪟 異쒕젰�섍린
-    await interaction.response.send_message(embed=embed)  # �꾩뿉�� 留뚮뱺 �ㅻ쪟 硫붿떆吏� 蹂대궡湲�
+    await interaction.response.send_message(embed=embed, ephemeral=True)  # �꾩뿉�� 留뚮뱺 �ㅻ쪟 硫붿떆吏� 蹂대궡湲�
 
 
 async def success(interaction: nextcord.Interaction, embed_desc: str, image_url: str = None):
@@ -39,6 +40,17 @@ async def error(interaction: nextcord.Interaction, embed_desc: str, image_url: s
                            color=nextcord.Color.red())
     if image_url is not None:
         embed.set_thumbnail(url=image_url)
+    embed.set_footer(
+        text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
+        icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")
+    embed.timestamp = datetime.now()
+    await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=5)
+
+
+async def info(interaction: nextcord.Interaction, info: str):
+    embed = nextcord.Embed(title=kira_language.get_text("embed-title-info"),
+                           description=info,
+                           color=nextcord.Color.purple())
     embed.set_footer(
         text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
         icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")

@@ -28,7 +28,7 @@ class SearchBookCommand(commands.Cog):
             await interaction.response.send_message(kira_language.get_text("search-book-value-error-1"))  # 문구 출력
             return
 
-        url = f"https://dapi.kakao.com/v3/search/book?sort=latest&page={math.ceil(page/10)}&query={bookname}"
+        url = f"https://dapi.kakao.com/v3/search/book?sort=latest&page={math.ceil(page / 10)}&query={bookname}"
 
         header = {'Authorization': f'KakaoAK {parse_authkey.get_auth_key("kakao-api-key")}'}  # header에 카카오 API키를 입력
         result = requests.get(url, headers=header)  # 요청을 보낸 후
@@ -37,7 +37,7 @@ class SearchBookCommand(commands.Cog):
         if page <= 10:
             content = page - 1
         else:
-            content = page-(10*(math.ceil(page/10))) - 1
+            content = page - (10 * (math.ceil(page / 10))) - 1
         try:
             if data['meta']['total_count'] != 0:
                 if data['meta']['pageable_count'] >= 1000:
@@ -49,8 +49,6 @@ class SearchBookCommand(commands.Cog):
                     embed = nextcord.Embed(
                         title=f":book: '{bookname}' {kira_language.get_text('search-book-search-result')} **({page}/{data['meta']['pageable_count']})**",
                         description=f"**{data['documents'][content]['title']}**", color=nextcord.Color.green())
-                embed.set_author(name="using Kakao API",
-                                 icon_url="https://t1.kakaocdn.net/kakaocorp/kakaocorp/admin/1b884871017800001.png")
                 embed.set_thumbnail(url=f"{data['documents'][content]['thumbnail']}")
                 embed.add_field(name=kira_language.get_text("search-book-embed-field-author"),
                                 value=f"``{data['documents'][content]['authors'][0]}``", inline=True)
@@ -72,18 +70,17 @@ class SearchBookCommand(commands.Cog):
                                 inline=False)
                 embed.set_footer(
                     text=f"Request by {interaction.user} ・ Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
-                    icon_url=f"{interaction.user.avatar}")
+                    icon_url=f"{interaction.user.display_avatar}")
                 embed.timestamp = datetime.now()
                 await interaction.response.send_message(embed=embed)
             else:
-                embed = nextcord.Embed(title=f":book: '{bookname}' {kira_language.get_text('search-book-search-no-result-1')}",
-                                      description=f"{kira_language.get_text('search-book-search-no-result-2')} ``{bookname}``",
-                                      color=nextcord.Color.red())
-                embed.set_author(name="using Kakao API",
-                                 icon_url="https://t1.kakaocdn.net/kakaocorp/kakaocorp/admin/1b884871017800001.png")
+                embed = nextcord.Embed(
+                    title=f":book: '{bookname}' {kira_language.get_text('search-book-search-no-result-1')}",
+                    description=f"{kira_language.get_text('search-book-search-no-result-2')} ``{bookname}``",
+                    color=nextcord.Color.red())
                 embed.set_footer(
                     text=f"Request by {interaction.user} ・ Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
-                    icon_url=f"{interaction.user.avatar}")
+                    icon_url=f"{interaction.user.display_avatar}")
                 embed.timestamp = datetime.now()
                 await interaction.response.send_message(embed=embed)
         except Exception as e:
@@ -95,7 +92,6 @@ def cut_text(text: str, index: int):
         return text[:index] + "..."
     else:
         return text
-
 
 
 def setup(bot):
