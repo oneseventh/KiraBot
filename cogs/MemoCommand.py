@@ -176,12 +176,13 @@ class WriteMemo(nextcord.ui.Modal):
             conn = sqlite3.connect('././memo.db', isolation_level=None)
             c = conn.cursor()
             c.execute("INSERT INTO memo (user_id, memo_name, content) VALUES (?, ?, ?)"
-                      ,(interaction.user.id, self.memo_name.value, memo_content.replace("'", "'")))
+                      , (interaction.user.id, self.memo_name.value, memo_content.replace("'", "'")))
             conn.commit()
             conn.close()
-            await alert.success(interaction, f"``{self.memo_name.value}{kira_language.get_text('memo-success-write')}\n"
-                                             f"**{kira_language.get_text('memo-embed-field-memo-content')}**"
-                                             f"```{self.memo_content.value}```")
+            await alert.success(interaction,
+                                f"``{self.memo_name.value}`` {kira_language.get_text('memo-success-write')}\n"
+                                f"**{kira_language.get_text('memo-embed-field-memo-content')}**"
+                                f"```{self.memo_content.value}```")
             return
 
 

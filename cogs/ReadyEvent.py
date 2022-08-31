@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import nextcord
 from nextcord.ext import commands
 
@@ -15,9 +17,9 @@ class ReadyEvent(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.content == "�뚯뒪��":
-            print("O")
-            cogs.SearchBookCommand.cut_text()
+        if message.guild:
+            print(f'[{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] [{message.guild.name} - {message.channel.name}] '
+                  f'{message.author}: {message.content}')
 
 
 def setup(bot):

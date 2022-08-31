@@ -8,6 +8,7 @@ import nextcord
 intents = nextcord.Intents.default()
 intents.message_content = True
 intents.members = True
+intents.voice_states = True
 
 GUILD_ID = 1011601743399890975
 language = 'ko'

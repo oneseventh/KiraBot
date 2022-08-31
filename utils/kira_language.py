@@ -46,9 +46,9 @@ def get_text(langpath: str, fallback: str = None):
                     with open(f"././lang/{fallback}.lang", 'r', encoding='utf-8') as fi:
                         for line2 in fi:
                             if line2.startswith(langpath):
-                                return line2[line2.index(":") + 2:].replace("<br>", "\n")
+                                return line2[line2.index(":") + 2:].strip().replace("<br>", "\n")
                 else:
-                    return line[line.index(":") + 2:].replace("<br>", "\n")
+                    return line[line.index(":") + 2:].strip().replace("<br>", "\n")
 
 
 def get_support_lang():
