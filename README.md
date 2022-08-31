@@ -1,2 +1,4 @@
-# ScinceBot
-Python 언어로 개발 하였으며, 개발에 4명이 참여한 인천정보과학고등학교 합작 디스코드 봇입니다.
+<h1 align=center>
+✨ KiraBot
+</h1>
+<h3 align=center>KiraBot은 <a href="https://github.com/nextcord/nextcord">nextcord</a>를 이용해 만든 봇입니다.</h3>
