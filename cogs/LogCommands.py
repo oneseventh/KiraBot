@@ -27,7 +27,7 @@ class LogCommands(commands.Cog):
                 for line in lines:
                     if channel.id == int(line):
                         guild_manager.set_log_channel(int(line))
-        else:
+        else:   
             f = open(path, 'w')
             f.write(f"{channel.id}\n")
             guild_manager.set_log_channel(channel.id)
