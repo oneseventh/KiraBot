@@ -23,7 +23,7 @@ async def critical_error(interaction: nextcord.Interaction, errorname: str, erro
     await interaction.response.send_message(embed=embed, ephemeral=True)  # �꾩뿉�� 留뚮뱺 �ㅻ쪟 硫붿떆吏� 蹂대궡湲�
 
 
-async def success(interaction: nextcord.Interaction, embed_desc: str, image_url: str = None):
+async def success(interaction: nextcord.Interaction, embed_desc: str, view: nextcord.ui.View = None, image_url: str = None):
     embed = nextcord.Embed(title=kira_language.get_text("embed-title-success"), description=embed_desc,
                            color=nextcord.Color.green())
     if image_url is not None:
@@ -32,7 +32,10 @@ async def success(interaction: nextcord.Interaction, embed_desc: str, image_url:
         text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
         icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")
     embed.timestamp = datetime.now()
-    await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=5)
+    if view is not None:
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True, delete_after=5)
+    else:
+        await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=5)
 
 
 async def error(interaction: nextcord.Interaction, embed_desc: str, image_url: str = None):
@@ -47,10 +50,12 @@ async def error(interaction: nextcord.Interaction, embed_desc: str, image_url: s
     await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=5)
 
 
-async def info(interaction: nextcord.Interaction, info: str):
+async def info(interaction: nextcord.Interaction, info: str, image_url: str = None):
     embed = nextcord.Embed(title=kira_language.get_text("embed-title-info"),
                            description=info,
                            color=nextcord.Color.purple())
+    if image_url is not None:
+        embed.set_thumbnail(url=image_url)
     embed.set_footer(
         text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
         icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")

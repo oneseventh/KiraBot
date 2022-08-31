@@ -1,22 +1,22 @@
 embed-title-developing: :cry:  미안해..
 embed-title-developing-info: 아직 개발중이야..! 금방 만들어 올게! ✨
 embed-title-success: :white_check_mark:  성공!
-embed-title-error: :skull:  .. 앗!
+embed-title-error: ❌  .. 앗!
 embed-title-info: :information_source:  정보
 
-still-developed: 개발중인 기능입니다.<br>빠른 시일내에 개발 하겠습니다.
-song-stopped: 노래를 멈췄어요!
-song-already-stopped: 노래가 이미 멈춰있어요.
-song-resumed: 노래를 재생합니다.
-song-already-resumed: 노래가 이미 재생중입니다.
+still-developed: 이 부분은 아직 잘 모르는 부분이야..<br>금방 배워 올게..!
+song-stopped: 노래를 멈췄어!
+song-already-stopped: 노래가 이미 멈춰 있어!
+song-resumed: 노래를 재생 할게!
+song-already-resumed: 노래가 이미 재생 중 이야!
 song-skipped: 노래를 스킵 했어요!
-leave-voice-room: 보이스 채널에서 퇴장했어요.
-song-no-playing: 재생중인 노래가 없어요.
-song-want-to-listen: 노래를 듣고싶나요?<br>예약 버튼으로 듣고 싶은 노래를 예약해주세요!
-bot-request-enter-voice-channel-if-user-not-joined-voice-channel: 날 부르기 전에 먼저 읍성 채널에 접속 해 줘!
-modal-title-song-queue: 노래 예약 폼
-modal-label-want-youtube-link: 재생을 원하는 노래의 유튜브 주소를 입력해 주세요!
-music-bot-button-text-reenter: 돌아 와줘
+leave-voice-room: 음성 채널 에서 퇴장 했어!
+song-no-playing: 재생 중인 노래가 없어!
+song-want-to-listen: 노래 듣고 싶어?<br>듣고 싶은 노래를 나한테 알려 줘!
+bot-request-enter-voice-channel-if-user-not-joined-voice-channel: 부르기 전에 먼저 음성 채널에 접속 해 줘!
+modal-title-song-queue: 노래 알려 주기
+modal-label-want-youtube-link: 내가 불러 줄 노래의 유튜브 주소를 입력 해 줘!
+music-bot-button-text-reenter: 돌아 와
 music-bot-embed-duration: **노래 길이**
 music-bot-embed-viewer: **조회 수**
 music-bot-embed-like: **좋아요**
@@ -24,6 +24,9 @@ music-bot-button-play: 재생
 music-bot-button-pause: 멈춤
 music-bot-button-next: 다음
 music-bot-button-exit: 나가기
+music-bot-button-queue: 예약
+music-bot-embed-left-music: 남은 노래
+music-bot-embed-requester: 신청자
 
 profile-embed-display-name: **서버에서의 별명**
 profile-embed-info: 님의 프로필 정보
@@ -72,11 +75,6 @@ memo-private-dm-message: 여기, 받아줘! 너가 부탁한 파일 맞지?
 error-embed-title: :skull:  큰 오류가 발생했어..
 error-embed-description-part-1: 날 만든 사람에게 문의해 줘..!<br>로그를 ``logs/error_
 error-embed-description-part-2: .log``에 저장했어!
-
-message-not-guild-6-11: , おはようございます。
-message-not-guild-12-18: , こんにちは。
-message-not-guild-19-23: , こんばんは。
-message-not-guild-else: , お休みなさい。
 
 PART1_DEVELOPER_NAME: 17th
 PART1_DEVELOPER_PROFILE_URL: https://images-ext-2.discordapp.net/external/WfO_TJDQ71XHUwZ_-OW3AnGMAB90HbPO4gaac6An6dE/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/574411212599590940/a_90e8f0035e42b97ecb16c6ede5cde185.gif
