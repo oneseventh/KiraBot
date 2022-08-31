@@ -1,9 +1,21 @@
+"""
+2022-08-31
+
+참고: https://gist.github.com/vbe0201/ade9b80f2d3b64643d854938d40a0a2d
+thanks for @vbe0201!
+
+"""
+
 import asyncio
-import traceback
-from datetime import timedelta
+import functools
+import itertools
+import math
+import random
+from datetime import datetime
 
 import nextcord.ui
-import youtube_dl
+import yt_dlp
+from async_timeout import timeout
 from nextcord import Interaction
 from nextcord.ext import commands
 
@@ -11,387 +23,428 @@ import main
 from utils import kira_language, alert
 
 
-def get_video_info(url: str):
-    """
-
-    :param url:
-    :return: List[title, url, duration, thumb]
-    """
-    YDL_OPTIONS = {'format': 'bestaudio'}
-    with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
-        info_dict = ydl.extract_info(url, download=False)
-        video_title = info_dict.get('title')
-        duration = info_dict.get("duration")
-        thumbnail = info_dict.get("thumbnail")
-        return [video_title, duration, thumbnail]
+class VoiceError(Exception):
+    pass
 
 
-class MusicQueue:
-    def __init__(self, max_size=50):
-        self.max_size = max_size
-        self.queue_list = [[]] * self.max_size
-        self.capacity = self.max_size
-        self.front = 0
-        self.rear = -1
-        self.count = 0
+class YTDLError(Exception):
+    pass
 
-    def dequeue(self):
-        if self.is_empty():
-            print("Queue underflow")
-        x = self.queue_list[self.front - 1]
-        del self.queue_list[self.front - 1]
-        self.front = (self.front + 1) % self.capacity
-        self.count = self.count - 1
-        return x
 
-    def enqueue(self, member: nextcord.Member, value):
-        if self.is_full():
-            print("Queue overflow")
-        self.rear = (self.rear + 1) % self.capacity
-        data = get_video_info(value)
-        self.queue_list[self.rear] = [member, data[0], value, data[2], data[1]]
-        self.count = self.count + 1
+class YTDLSource(nextcord.PCMVolumeTransformer):
+    YTDL_OPTIONS = {
+        'format': 'bestaudio/best',
+        'extractaudio': True,
+        'audioformat': 'mp3',
+        'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
+        'restrictfilenames': True,
+        'noplaylist': True,
+        'nocheckcertificate': True,
+        'ignoreerrors': False,
+        'logtostderr': False,
+        'quiet': True,
+        'no_warnings': True,
+        'default_search': 'auto',
+        'source_address': '0.0.0.0',
+    }
 
-    def get(self, index):
-        return self.queue_list[index]
+    FFMPEG_OPTIONS = {
+        'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+        'options': '-vn',
+    }
 
-    def get_all(self):
-        return self.queue_list
+    ytdl = yt_dlp.YoutubeDL(YTDL_OPTIONS)
 
-    def get_play(self):
-        if self.is_empty():
-            print("Queue underflow")
-        return self.queue_list[self.front]
+    def __init__(self, interaction: nextcord.Interaction, source: nextcord.FFmpegPCMAudio, *, data: dict,
+                 volume: float = 0.5):
+        super().__init__(source, volume)
 
-    def size(self):
-        return self.count
+        self.requester = interaction.user
+        self.channel = interaction.channel
+        self.data = data
 
-    def is_empty(self):
-        return self.count == 0
+        self.uploader = data.get('uploader')
+        self.uploader_url = data.get('uploader_url')
+        date = data.get('upload_date')
+        self.upload_date = date[6:8] + '.' + date[4:6] + '.' + date[0:4]
+        self.title = data.get('title')
+        self.thumbnail = data.get('thumbnail')
+        self.description = data.get('description')
+        self.duration = self.parse_duration(int(data.get('duration')))
+        self.tags = data.get('tags')
+        self.url = data.get('webpage_url')
+        self.views = data.get('view_count')
+        self.likes = data.get('like_count')
+        self.dislikes = data.get('dislike_count')
+        self.stream_url = data.get('url')
 
-    def is_full(self):
-        return self.size() == self.capacity
+    def __str__(self):
+        return '**{0.title}** by **{0.uploader}**'.format(self)
+
+    @classmethod
+    async def create_source(cls, interaction: nextcord.Interaction, search: str, *, loop: asyncio.BaseEventLoop = None):
+        loop = loop or asyncio.get_event_loop()
+
+        partial = functools.partial(cls.ytdl.extract_info, search, download=False, process=False)
+        data = await loop.run_in_executor(None, partial)
+
+        if data is None:
+            raise YTDLError('Couldn\'t find anything that matches `{}`'.format(search))
+
+        if 'entries' not in data:  # True
+            process_info = data
+        else:  # False
+            process_info = None
+            for entry in data['entries']:
+                if entry:
+                    process_info = entry
+                    break
+
+            if process_info is None:
+                raise YTDLError('Couldn\'t find anything that matches `{}`'.format(search))
+
+        webpage_url = process_info['webpage_url']
+        partial = functools.partial(cls.ytdl.extract_info, webpage_url, download=False)
+        processed_info = await loop.run_in_executor(None, partial)
+
+        if processed_info is None:
+            raise YTDLError('Couldn\'t fetch `{}`'.format(webpage_url))
+
+        if 'entries' not in processed_info:
+            info = processed_info
+        else:
+            info = None
+            while info is None:
+                try:
+                    info = processed_info['entries'].pop(0)
+                except IndexError:
+                    raise YTDLError('Couldn\'t retrieve any matches for `{}`'.format(webpage_url))
+
+        return cls(interaction, nextcord.FFmpegPCMAudio(info['url'], **cls.FFMPEG_OPTIONS), data=info)
+
+    @staticmethod
+    def parse_duration(duration: int):
+        minutes, seconds = divmod(duration, 60)
+        hours, minutes = divmod(minutes, 60)
+        days, hours = divmod(hours, 24)
+
+        duration = []
+        if days > 0:
+            duration.append(kira_language.get_text("music-duration-days").format(days))
+        if hours > 0:
+            duration.append(kira_language.get_text("music-duration-hours").format(hours))
+        if minutes > 0:
+            duration.append(kira_language.get_text("music-duration-minutes").format(minutes))
+        if seconds > 0:
+            duration.append(kira_language.get_text("music-duration-seconds").format(seconds))
+
+        return ' '.join(duration)
+
+
+class Song:
+    __slots__ = ('source', 'requester')
+
+    def __init__(self, source: YTDLSource):
+        self.source = source
+        self.requester = source.requester
+
+    def create_embed(self):
+        embed = (nextcord.Embed(title=self.source.uploader, url=self.source.uploader_url,
+                                description='**[{0}]({1})**'.format(cut_text(self.source.title, 24), self.source.url),
+                                color=0xffffff)
+                 .set_author(name=kira_language.get_text("music-embed-title-playing"))
+                 .add_field(name=kira_language.get_text("music-embed-field-description"), value='```{0}```'
+                            .format(cut_text(self.source.description, 100))
+                            , inline=False)
+                 .add_field(name=kira_language.get_text("music-embed-field-duration"),
+                            value='``{0}``'.format(self.source.duration))
+                 .add_field(name=kira_language.get_text("music-embed-field-view"),
+                            value='``{0}``'.format(self.source.views))
+                 .add_field(name=kira_language.get_text("music-embed-field-like"),
+                            value='``{0}``'.format(self.source.likes))
+                 .add_field(name=kira_language.get_text("music-embed-field-date"),
+                            value='``{0}``'.format(self.source.upload_date))
+                 .add_field(name=kira_language.get_text("music-embed-field-left"),
+                            value='``{0}곡``'.format(SongQueue().__len__()))
+                 .add_field(name=kira_language.get_text("music-embed-field-requester"), value=self.requester.mention)
+
+                 # .add_field(name='``채널``', value=ㅇ)
+                 .set_image(url=self.source.thumbnail))
+
+        return embed
+
+    def current_song(self):
+        return [self.source.title, self.source.duration, self.source.uploader,
+                self.source.uploader_url, self.source.thumbnail, self.source.url, self.source.requester]
+
+
+class SongQueue(asyncio.Queue):
+    def __getitem__(self, item):
+        if isinstance(item, slice):
+            return list(itertools.islice(self._queue, item.start, item.stop, item.step))
+        else:
+            return self._queue[item]
+
+    def __iter__(self):
+        return self._queue.__iter__()
+
+    def __len__(self):
+        return self.qsize()
 
     def clear(self):
-        self.queue_list = [[]] * self.max_size
-        self.count = 0
+        self._queue.clear()
 
-    async def wait_next(self):
-        await asyncio.sleep()
+    def shuffle(self):
+        random.shuffle(self._queue)
+
+    def remove(self, index: int):
+        del self._queue[index]
+
+
+class VoiceState:
+    def __init__(self, bot: commands.Bot, interaction: nextcord.Interaction):
+        self.bot = bot
+        self._interaction = interaction
+
+        self.current = None
+        self.voice = None
+        self.next = asyncio.Event()
+        self.songs = SongQueue()
+
+        self._loop = False
+        self._volume = 0.5
+
+        self.audio_player = bot.loop.create_task(self.audio_player_task())
+
+    def __del__(self):
+        self.audio_player.cancel()
+
+    @property
+    def loop(self):
+        return self._loop
+
+    @loop.setter
+    def loop(self, value: bool):
+        self._loop = value
+
+    @property
+    def volume(self):
+        return self._volume
+
+    @volume.setter
+    def volume(self, value: float):
+        self._volume = value
+
+    @property
+    def is_playing(self):
+        return self.voice and self.current
+
+    async def audio_player_task(self):
+        while True:
+            self.next.clear()
+
+            if not self.loop:
+                # 노래가 끝난 후, 다음 노래가 예약 될때 까지 3분 동안 기다립니다.
+                # 만약, 3분이 지나도 새로운 노래가 예약되지 않는다면 성능을 위해 연결을 끊습니다.
+                try:
+                    async with timeout(180):  # 3분, 1초 = 1
+                        self.current = await self.songs.get()
+                except asyncio.TimeoutError:
+                    self.bot.loop.create_task(self.stop())
+                    return
+
+            self.current.source.volume = self._volume
+            self.voice.play(self.current.source, after=self.play_next_song)
+            await self.current.source.channel.send(embed=self.current.create_embed())
+
+            await self.next.wait()
+
+    def play_next_song(self, error=None):
+        if error:
+            raise VoiceError(str(error))
+
+        self.next.set()
+
+    def skip(self):
+        if self.is_playing:
+            self.voice.stop()
+
+    async def stop(self):
+        self.songs.clear()
+
+        if self.voice:
+            await self.voice.disconnect()
+            self.voice = None
+
+
+def cut_text(text: str, index: int):
+    """
+    텍스트를 입력한 값에 따라 잘라 줍니다.
+    텍스트의 길이가 입력한 값에 미달한 경우 그대로 return 하며,
+    텍스트의 길이가 입력한 값보다 길때는 텍스트를 자른 뒤 ... 을 붙여서 return 합니다.
+        Args:
+            text (str): 자를 텍스트
+            index (int): 자를 길이
+        Returns:
+            result (str): 자른 텍스트
+    """
+    if len(text) > 180:
+        return text[:index] + '...'
+    else:
+        return text
 
 
 class MusicCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.voice_states = {}
 
-    q = MusicQueue(50)
     guild_id = main.GUILD_ID
 
-    @nextcord.slash_command(name="join",
-                            description="✨ 노래를 재생 하기 위해서 접속 중인 음성 채널에 들어 갈거야!", guild_ids=[guild_id])
-    async def test(self, interaction: Interaction, vc: nextcord.VoiceChannel =
-    nextcord.SlashOption(name="음성_채널", description="✨ 들어갈 음성 채널을 멘션해 줘!", required=False)):
-        voice_channel = nextcord.utils.get(self.bot.voice_clients, guild=interaction.guild)
+    def get_voice_state(self, interaction: nextcord.Interaction):
+        state = self.voice_states.get(interaction.guild.id)
+        if not state:
+            state = VoiceState(self.bot, interaction)
+            self.voice_states[interaction.guild.id] = state
 
-        if voice_channel is not None:
-            await interaction.guild.voice_client.disconnect(force=True)
-            if vc is None:
-                if interaction.user.voice is None:
-                    await alert.error(interaction,
-                                      kira_language.get_text("bot-request-enter-voice-"
-                                                             "channel-if-user-not-joined-voice-channel"))
-                    return
-                else:
-                    await interaction.user.voice.channel.connect()
-                    # await interaction.response.send_message(embed=no_queue(), view=QueueButton(interaction))
-                    # await interaction.response.send_modal(MusicForm())
-                    embed = nextcord.Embed(title=kira_language.get_text("song-no-playing"),
-                                           description=kira_language.get_text("song-want-to-listen"),
-                                           color=nextcord.Color.dark_gray())
-                    embed.set_footer(text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
-                                     icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")
-                    await interaction.response.send_message(embed=embed, view=NoQueueButton())
-                    return
-            else:
-                await vc.connect()
-                embed = nextcord.Embed(title=kira_language.get_text("song-no-playing"),
-                                       description=kira_language.get_text("song-want-to-listen"),
-                                       color=nextcord.Color.dark_gray())
-                embed.set_footer(text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
-                                 icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")
-                await interaction.response.send_message(embed=embed, view=NoQueueButton())
-                return
+        return state
 
-        else:
-            if interaction.user.voice is None:
-                await alert.error(interaction,
-                                  kira_language.get_text("bot-request-enter-voice-"
-                                                         "channel-if-user-not-joined-voice-channel"))
-                return
-            else:
-                await interaction.user.voice.channel.connect()
-                embed = nextcord.Embed(title=kira_language.get_text("song-no-playing"),
-                                       description=kira_language.get_text("song-want-to-listen"),
-                                       color=nextcord.Color.dark_gray())
-                embed.set_footer(text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
-                                 icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")
-                await interaction.response.send_message(embed=embed, view=NoQueueButton())
-                return
-
-    @nextcord.slash_command(name="summon_button", description="✨ [TEST]", guild_ids=[guild_id])
-    async def summon_button(self, interaction: Interaction):
-        await interaction.response.send_message(view=MusicButton(interaction, self.q))
-
-    @nextcord.slash_command(name="add_queue", description="✨ [TEST]", guild_ids=[guild_id])
-    async def add_queue(self, interaction: nextcord.Interaction, url: str):
-        self.q.enqueue(interaction.user, url)
-        await alert.success(interaction, f"``{url}``이 재생목록 에 추가되었습니다.")
-
-    @nextcord.slash_command(name="view_queue_list", description="✨ [TEST]", guild_ids=[guild_id])
-    async def view_queue_list(self, interaction: nextcord.Interaction):
-        await interaction.response.send_message(view=QueueListView(self.q))
-
-    @nextcord.slash_command(name="view_queue", description="✨ [TEST]", guild_ids=[guild_id])
-    async def view_queue(self, interaction: nextcord.Interaction):
-        if self.q.count == 0:
-            await alert.info(interaction, f"재생 목록에 아무 것도 없어!")
-            return
-        songs = ""
-        # for song in self.q.get_all():
-        #     if song is None:
-        #         continue
-        #     if count == 1:
-        #         songs += f"**재생 중:**\n #{count}. ``{self.q.get_play()[1]}`` - {self.q.get_play()[0]} " \
-        #                  f"``길이: {str(timedelta(seconds=self.q.get_play()[4]))}``\n" \
-        #                  f"``**대기 목록:**\n"
-        #         count += 1
-        #         continue
-        #     print(f"{count}. {song}")
-        songs += f"**재생 중:**\n``{self.q.get_play()[1]}`` - {self.q.get_play()[0]} " \
-                 f"``길이: {str(timedelta(seconds=self.q.get_play()[4]))}``\n" \
-                 f"**대기 목록:**\n"
-        for i in range(self.q.count):
-            if self.q.get(i) is None:
-                break
-            else:
-                # songs += f"{self.q.get(i)}"
-                if i == 0:
-                    continue
-                songs += f"**# {i}** - ``{self.q.get(i)[1]}`` - {self.q.get(i)[0]} " \
-                         f"``길이: {str((timedelta(seconds=self.q.get(i)[4])))}``\n"
-        songs += f"재생 목록에 총 **({self.q.count} / 50)**개의 노래가 있어!"
-        await alert.info(interaction, songs, self.q.get_play()[3])
-
-    @nextcord.slash_command(name="delete_queue", description="✨ [TEST]", guild_ids=[guild_id])
-    async def delete_queue(self, interaction: nextcord.Interaction):
-        self.q.dequeue()
-        await alert.success(interaction, f"재생 목록에서 첫번째 음악이 삭제되었습니다.")
-
-    @nextcord.slash_command(name="next_queue", description="✨ [TEST]", guild_ids=[guild_id])
-    async def next_queue(self, interaction: nextcord.Interaction):
-        self.q.dequeue()
-        await alert.success(interaction, f"재생 목록에서 첫번째 음악이 삭제되었습니다.")
-
-
-class QueueList(nextcord.ui.Select):
-    def __init__(self, q: MusicQueue):
-        queue_list = []
-        queue_list.append(nextcord.SelectOption(label=f"재생 중: {q.get_play()[1]}",
-                                                description=f"신청자: {q.get_play()[0]}\
-                                                 길이: {str((timedelta(seconds=q.get_play()[4])))}",
-                                                value=0))
-        for i in range(q.count):
-            if q.get(i) is None:
-                break
-            else:
-                if i == 0:
-                    continue
-                queue_list.append(nextcord.SelectOption(label=f"#{i} {q.get(i)[1]}",
-                                                        description=f"신청자: {q.get(i)[0]}\
-                                                 길이: {str((timedelta(seconds=q.get(i)[4])))}",
-                                                        value=i))
-        super().__init__(placeholder="✨ 노래를 선택해 주세요!", min_values=1, max_values=1, options=queue_list)
-
-    async def callback(self, interaction: Interaction):
-        #  callback
-        interaction.response.send_message(self.values[0])
-
-
-class QueueListView(nextcord.ui.View):
-    def __init__(self, q: MusicQueue):
-        super().__init__()
-        self.add_item(QueueList(q))
-
-
-class NoQueueButton(nextcord.ui.View):
-    def __init__(self):
-        super().__init__()
-
-    @nextcord.ui.button(label="예약", style=nextcord.ButtonStyle.gray)
-    async def queue(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await interaction.response.send_modal(MusicForm(MusicCommand.q))
-
-    @nextcord.ui.button(label="나가기", style=nextcord.ButtonStyle.danger)
-    async def exit(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await interaction.guild.voice_client.disconnect(force=True)
-        MusicCommand.q.clear()
-        await alert.success(interaction, kira_language.get_text("leave-voice-room"), EnterButton(interaction))
-
-
-class EnterButton(nextcord.ui.View):
-    def __init__(self, interaction: nextcord.Interaction):
-        super().__init__()
-        self.interaction = interaction
-
-    @nextcord.ui.button(label=kira_language.get_text('music-bot-button-text-reenter'),
-                        style=nextcord.ButtonStyle.green, emoji="✨")
-    async def reenter(self, button: nextcord.Button, inter: nextcord.Interaction):
-        if inter.user.voice is None:
-            await alert.error(inter, kira_language.get_text
-            ("bot-request-enter-voice-channel-if-user-not-joined"
-             "-voice-channel"))
-            return
-        else:
-            await inter.user.voice.channel.connect()
-            embed = nextcord.Embed(title=kira_language.get_text("song-no-playing"),
-                                   description=kira_language.get_text("song-want-to-listen"),
-                                   color=nextcord.Color.dark_gray())
-            embed.set_footer(text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
-                             icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")
-            await inter.response.send_message(embeds=embed, view=NoQueueButton())
-            return
-
-
-class MusicButton(nextcord.ui.View):
-    def __init__(self, interaction: nextcord.Interaction, queue: MusicQueue):
-        super().__init__()
-        self.interaction = interaction
-        self.q = queue
-
-    # @nextcord.ui.button(label="이전", style=nextcord.ButtonStyle.primary, emoji="⏮")
-    # async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-    #     await alert.developing(interaction)
-
-    @nextcord.ui.button(label="재생", style=nextcord.ButtonStyle.green)
-    async def play(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    @nextcord.slash_command(name='join', description="✨ 노래를 들려 주기 위해서 보이스 채널에 입장 해요!", guild_ids=[guild_id])
+    async def _join(self, interaction: nextcord.Interaction):
+        """유저가 있는 보이스 채널에 입장 합니다. 또한, 데이터 충돌 방지를 위해 대기열을 초기화 합니다."""
         try:
-            if self.interaction.guild.voice_client.is_playing():
-                await alert.error(interaction, kira_language.get_text("song-already-resumed"))
-            else:
-                self.interaction.guild.voice_client.resume()
-                await alert.success(interaction, kira_language.get_text("song-resumed"))
-        except AttributeError as e:
-            await alert.critical_error(interaction, e.__class__.__name__, str(e), str(traceback.format_exc()))
+            del self.voice_states[interaction.guild.id]
+        except KeyError:
+            print("없음")
+        if not interaction.user.voice:
+            return await alert.error(interaction, kira_language.get_text("music-alert-join-error"))
+        destination = interaction.user.voice.channel
+        if self.get_voice_state(interaction).voice:
+            await alert.success(interaction, kira_language.get_text("music-alert-join").format(destination.id))
+            await self.get_voice_state(interaction).voice.move_to(destination)
+            return
 
-    @nextcord.ui.button(label="멈춤", style=nextcord.ButtonStyle.gray)
-    async def pause(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if self.interaction.guild.voice_client.is_playing():
-            self.interaction.guild.voice_client.pause()
-            await alert.success(interaction, kira_language.get_text("song-stopped"))
+        await alert.success(interaction, kira_language.get_text("music-alert-join").format(destination.id))
+        self.get_voice_state(interaction).voice = await destination.connect()
+
+    @nextcord.slash_command(name='leave', description="✨ 보이스 채널에서 퇴장 해요.", guild_ids=[guild_id])
+    async def _leave(self, interaction: Interaction):
+        """대기열을 정리한 후 보이스 채널에서 퇴장합니다."""
+        del self.voice_states[interaction.guild.id]
+        if not self.get_voice_state(interaction).voice:
+            return await alert.error(interaction, kira_language.get_text("music-alert-leave-error"))
+
+        await alert.success(interaction, kira_language.get_text("music-alert-leave"))
+        await self.get_voice_state(interaction).stop()
+
+    @nextcord.slash_command(name='now', description="✨ 재생중인 노래의 정보를 표시 해요.", guild_ids=[guild_id])
+    async def _now(self, interaction: Interaction):
+        """재생중인 노래를 표시합니다."""
+        try:
+            await interaction.response.send_message(embed=self.get_voice_state(interaction).current.create_embed())
+        except AttributeError:
+            await alert.info(interaction, kira_language.get_text("music-alert-now-error"))
+
+    @nextcord.slash_command(name='pause', description="✨ 재생중인 노래를 멈춰요. (곧 지원 종료)", guild_ids=[guild_id])
+    async def _pause(self, interaction: Interaction):
+        """재생중인 노래를 멈춥니다."""
+
+        if not self.get_voice_state(interaction).is_playing and self.get_voice_state(interaction).voice.is_playing():
+            self.get_voice_state(interaction).voice.pause()
+            return await alert.success(interaction, kira_language.get_text("music-alert-pause"))
+        pass
+
+    @nextcord.slash_command(name='resume', description="✨ 멈춘 노래를 재시작 해요. (곧 지원 종료)", guild_ids=[guild_id])
+    async def _resume(self, interaction: Interaction):
+        """멈춰 있는 노래를 재생합니다."""
+
+        if not self.get_voice_state(interaction).is_playing and self.get_voice_state(interaction).voice.is_paused():
+            self.get_voice_state(interaction).voice.resume()
+            return await alert.success(interaction, kira_language.get_text("music-alert-resume"))
+        pass
+
+    @nextcord.slash_command(name='stop', description="✨ 노래봇초기화. [ADMIN]", guild_ids=[guild_id])
+    @commands.has_permissions(administrator=True)
+    async def _stop(self, interaction: Interaction):
+        """노래봇을 초기화 합니다."""
+
+        self.get_voice_state(interaction).songs.clear()
+
+        if not self.get_voice_state(interaction).is_playing:
+            self.get_voice_state(interaction).voice.stop()
+
+    @nextcord.slash_command(name='skip', description="✨ 재생중인 노래를 넘겨요.", guild_ids=[guild_id])
+    async def _skip(self, interaction: Interaction):
+        if not self.get_voice_state(interaction).is_playing:
+            return await alert.error(interaction, kira_language.get_text("music-alert-skip-error"))
+        self.get_voice_state(interaction).skip()
+        await alert.success(interaction, kira_language.get_text("music-alert-skip"))
+
+    @nextcord.slash_command(name='queue', guild_ids=[guild_id])
+    async def _queue(self, interaction: Interaction, *, page: int = 1):
+        """
+            길드의 음악 재생 목록을 표시 합니다.
+            1 페이지당 10개의 항목을 볼 수 있으며, 이는 조정할 수 있습니다.
+            :param page: 표시할 페이지 번호
+        """
+
+        if len(self.get_voice_state(interaction).songs) == 0:
+            return await alert.info(interaction, kira_language.get_text("music-alert-queue-empty"))
+
+        items_per_page = 10  # 1 페이지당 보이는 항목 개수
+        pages = math.ceil(len(self.get_voice_state(interaction).songs) / items_per_page)
+
+        start = (page - 1) * items_per_page
+        end = start + items_per_page
+
+        queue = ''
+        for i, song in enumerate(self.get_voice_state(interaction).songs[start:end], start=start):
+            queue += '`#{0}` [{1}]({2}) - **{3}**\n' \
+                .format(i + 1, cut_text(song.source.title, 24), song.source.url,
+                        self.get_voice_state(interaction).current.current_song()[6])
+        queue += '\n' + kira_language.get_text("music-queue-embed-field-pages").format(page, pages)
+
+        embed = nextcord.Embed(
+            title=kira_language.get_text(kira_language.get_text("music-queue-embed-field-now-playing")),
+            description="[**{0}**]({1}) - **{2}**".format(cut_text(self.get_voice_state(interaction)
+                                                                   .current.current_song()[0], 24),
+                                                          self.get_voice_state(interaction).current.current_song()[5],
+                                                          self.get_voice_state(interaction).current.current_song()[6]),
+
+            color=0xffffff)
+        embed.set_author(name=kira_language.get_text("music-queue-embed-title-playlist"))
+        embed.set_thumbnail(url=self.get_voice_state(interaction).current.current_song()[4])
+        embed.add_field(name=kira_language.get_text("music-queue-embed-field-wait-counts")
+                        .format(len(self.get_voice_state(interaction).songs)), value=queue)
+        embed.set_footer(
+            text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
+            icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")
+        await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(name='remove', description="✨ 대기열에서 노래를 제거 해요.", guild_ids=[guild_id])
+    async def _remove(self, interaction: Interaction, index: int):
+        """ index에 대응 하는 노래를 대기열에서 제거 합니다. """
+
+        if len(self.get_voice_state(interaction).songs) == 0:
+            return await alert.error(interaction, kira_language.get_text("music-alert-queue-empty"))
         else:
-            await alert.error(interaction, kira_language.get_text("song-already-stopped"))
+            await alert.success(interaction, kira_language.get_text("music-alert-removed-song")
+                                .format(index, self.get_voice_state(interaction).songs[index - 1].source.title))
+            self.get_voice_state(interaction).songs.remove(index - 1)
 
-    @nextcord.ui.button(label="예약", style=nextcord.ButtonStyle.gray)
-    async def queue(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await interaction.response.send_modal(MusicForm(MusicCommand.q))
-
-    # @nextcord.ui.button(label="목록", style=nextcord.ButtonStyle.gray)
-    # async def queue(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-    #     await interaction.response.send_modal(MusicForm(MusicCommand.q))
-
-    @nextcord.ui.button(label="스킵", style=nextcord.ButtonStyle.danger)
-    async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.interaction.guild.voice_client.stop()
-        if self.q.size() == 0:
-            pass
+    @nextcord.slash_command(name='play', description="✨ 원하는 노래를 불러 줄게!", guild_ids=[guild_id])
+    async def _play(self, interaction: Interaction,
+                    search: str = nextcord.SlashOption(name='검색',
+                                                       description='✨ 검색할 노래 제목이나 유튜브 URL을 적어 줘!', required=True)):
+        try:
+            source = await YTDLSource.create_source(interaction, search, loop=self.bot.loop)
+        except YTDLError as e:
+            await alert.error(interaction, '재생할 수 없음: {}'.format(str(e)))
         else:
-            if self.q.size() == 1:
-                embed = nextcord.Embed(title=kira_language.get_text("song-no-playing"),
-                                       description=kira_language.get_text("song-want-to-listen"),
-                                       color=nextcord.Color.dark_gray())
-                embed.set_footer(text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
-                                 icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")
-                await interaction.response.send_message(embed=embed, view=NoQueueButton())
-                self.q.dequeue()
-                return
-            await play_music(interaction, self.q)
-
-            await alert.success(interaction, "노래를 넘겼어!")
-
-    @nextcord.ui.button(label="나가기", style=nextcord.ButtonStyle.danger)
-    async def exit(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await interaction.guild.voice_client.disconnect(force=True)
-        self.q.clear()
-        await alert.success(interaction, kira_language.get_text("leave-voice-room"), EnterButton(interaction))
-
-
-class MusicForm(nextcord.ui.Modal):
-    def __init__(self, q: MusicQueue):
-        super().__init__(
-            kira_language.get_text("modal-title-song-queue")
-        )
-        self.q = q
-        self.answer = nextcord.ui.TextInput(label=kira_language.get_text("modal-label-want-youtube-link"),
-                                            style=nextcord.TextInputStyle.short,
-                                            placeholder="https://www.youtube.com/watch...",
-                                            required=True)
-        self.add_item(self.answer)
-
-    async def callback(self, interaction: nextcord.Interaction) -> None:
-        self.q.enqueue(interaction.user, self.answer.value)
-        if self.q.size() == 1:
-            await play_music(interaction, self.q)
-        else:
-            print(self.q.get(self.q.size() - 1))
-            await alert.success(interaction,
-                                f"``{self.q.get(self.q.size() - 1)[1]}`` 노래를 예약 했어!\n대기열 ``#{self.q.size() - 1}``")
-
-
-async def play_music(interaction: nextcord.Interaction, q: MusicQueue):
-    FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-                      'options': '-vn'}
-    YDL_OPTIONS = {'format': 'bestaudio'}
-    vc = interaction.guild.voice_client
-    try:
-        with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
-            info = ydl.extract_info((q.get_play()[2]), download=False)
-            url2 = info['formats'][0]['url']
-            source = await nextcord.FFmpegOpusAudio.from_probe(url2, **FFMPEG_OPTIONS)
-            title = info.get('title')
-            if len(title) > 20:
-                title = title[:19] + "..."
-            description = info.get('description')
-            if len(description) > 80:
-                description = description[:80] + "..."
-            # await bot.change_presence(
-            #     activity=discord.Activity(type=discord.ActivityType.listening, name=f"{title}"))
-            embed = nextcord.Embed(title=f"{title}", url=f"{q.get_play()[2]}", description=f"{description}",
-                                   color=nextcord.Color.dark_gold()) \
-                .add_field(
-                name=kira_language.get_text("music-bot-embed-duration"),
-                value=f"``{str(timedelta(seconds=int(info.get('duration'))))}``").set_image(
-                url=f"{info.get('thumbnail')}").add_field(name=kira_language.get_text("music-bot-embed-viewer"),
-                                                          value=f"``{format(info.get('view_count'), ',')}``",
-                                                          inline=True).add_field(
-                name=kira_language.get_text("music-bot-embed-like"),
-                value=f"``{format(info.get('like_count'), ',')}``",
-                inline=True).add_field(name=kira_language.get_text("music-bot-embed-left-music"),
-                                       value=f"``{q.count - 1}``", inline=True) \
-                .add_field(name=kira_language.get_text("music-bot-embed-requester"),
-                           value=f"{q.get_play()[0].mention}").set_author(
-                name=f"{info.get('uploader')}",
-                url=f"{info.get('uploader_url')}").set_footer(
-                text=f"Request by {interaction.user} ・ Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
-                icon_url=f"{interaction.user.avatar}")
-            await interaction.response.send_message(embed=embed, view=MusicButton(interaction, q))
-            vc.play(source)
-    except Exception as e:
-        await alert.critical_error(interaction, e.__class__.__name__, str(e), str(traceback.format_exc()))
-
-
-def utc_to_kst(origin_time):
-    return (origin_time + timedelta(hours=9)).strftime("%Y-%m-%d %T")
-
+            song = Song(source)
+            await self.get_voice_state(interaction).songs.put(song)
+            await alert.success(interaction, kira_language.get_text("music-alert-enqueued")
+                                .format(song.source.title, SongQueue().__len__() + 1))
 
 def setup(bot):
     bot.add_cog(MusicCommand(bot))
