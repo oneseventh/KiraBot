@@ -46,3 +46,21 @@ KiraBot은 한국의 학생 3명이 모여 만든 디스코드 봇입니다!<br>
 
 <h2><a href="https://github.com/zzxz46412">@donggeon</a> Part</h2><br>
 <h2><a href="https://github.com/congachu">@congachu</a> Part</h2><br>
+
+![clean](https://user-images.githubusercontent.com/106534469/187964960-605038ac-d3d5-4caa-8f48-f7e0cd915f1c.png)<br><br>
+🧹 ``/청소 [number]`` - **최대 99개**의 채팅을 청소합니다.<br><br><br>
+
+![NICK](https://user-images.githubusercontent.com/106534469/187964991-d554f080-ac5b-4531-a06d-1dcfab99fbb9.png)<br><br>
+🔁 ``/닉변 [mention] [name]`` - **자신의 이름** 또는 **서버 구성원의 닉네임**을 변경합니다.<br><br><br>
+
+![say](https://user-images.githubusercontent.com/106534469/187965002-b2d471c6-0ae8-44be-a452-026785c96428.PNG)<br><br>
+💬 ``/따라해 [text]`` - 봇이 단어를 따라 말합니다<br><br><br>
+
+![gamble](https://user-images.githubusercontent.com/106534469/187964970-d486cecc-cf69-4e90-9328-fa683a8fd39b.png)<br><br>
+🎲 ``/홀짝 [홀/짝]`` - **반반 확률**로 홀 또는 짝이 나옵니다.<br><br><br>
+
+![league](https://user-images.githubusercontent.com/106534469/187964979-2c8588e9-e4c3-4f79-8d22-6730699f9d80.PNG)<br><br>
+🏆 ``/대회 인기`` - 현재 인기있는 대회, 공모전을 보여줍니다.<br>
+🏆 ``/대회 추천`` - 추천하고 싶은 대회, 공모전을 보여줍니다.<br>
+🏆 ``/대회 최신`` - 최근에 올라온 대회, 공모전을 보여줍니다.<br>
+🏆 ``/대회 전체`` - 위 항목을 모두 보여줍니다.<br><br><br>
