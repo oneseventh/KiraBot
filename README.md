@@ -22,6 +22,9 @@ KiraBot은 한국의 학생 3명이 모여 만든 디스코드 봇입니다!<br>
 
 # TODO
 
+음악봇 명령어 버튼으로 대체 하기.
+로그 채널 지정 명령어 버그 픽스
+
 
 # 기능
 <h2><a href="https://github.com/oneseventh">@17th</a> Part</h2><br>
