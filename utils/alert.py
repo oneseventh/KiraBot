@@ -33,9 +33,9 @@ async def success(interaction: nextcord.Interaction, embed_desc: str, view: next
         icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")
     embed.timestamp = datetime.now()
     if view is not None:
-        await interaction.response.send_message(embed=embed, view=view, ephemeral=True, delete_after=5)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
     else:
-        await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=5)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
 async def error(interaction: nextcord.Interaction, embed_desc: str, image_url: str = None):
@@ -47,7 +47,7 @@ async def error(interaction: nextcord.Interaction, embed_desc: str, image_url: s
         text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
         icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")
     embed.timestamp = datetime.now()
-    await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=5)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
 async def info(interaction: nextcord.Interaction, info: str, image_url: str = None):
@@ -60,7 +60,7 @@ async def info(interaction: nextcord.Interaction, info: str, image_url: str = No
         text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
         icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")
     embed.timestamp = datetime.now()
-    await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=5)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
 async def developing(interaction: nextcord.Interaction):
@@ -73,4 +73,4 @@ async def developing(interaction: nextcord.Interaction):
         text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
         icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")
     embed.timestamp = datetime.now()
-    await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=5)
+    await interaction.response.send_message(embed=embed, ephemeral=True)

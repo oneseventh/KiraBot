@@ -18,6 +18,7 @@ import yt_dlp
 from async_timeout import timeout
 from nextcord import Interaction
 from nextcord.ext import commands
+from yt_dlp import DownloadError
 
 import main
 from utils import kira_language, alert
@@ -79,7 +80,7 @@ class YTDLSource(nextcord.PCMVolumeTransformer):
         self.stream_url = data.get('url')
 
     def __str__(self):
-        return '**{0.title}** by **{0.uploader}**'.format(self)
+        return '{0.title}'.format(self)
 
     @classmethod
     async def create_source(cls, interaction: nextcord.Interaction, search: str, *, loop: asyncio.BaseEventLoop = None):
@@ -330,12 +331,12 @@ class MusicCommand(commands.Cog):
     @nextcord.slash_command(name='leave', description="✨ 보이스 채널에서 퇴장 해요.", guild_ids=[guild_id])
     async def _leave(self, interaction: Interaction):
         """대기열을 정리한 후 보이스 채널에서 퇴장합니다."""
-        del self.voice_states[interaction.guild.id]
-        if not self.get_voice_state(interaction).voice:
+        if self.get_voice_state(interaction).voice is None:
             return await alert.error(interaction, kira_language.get_text("music-alert-leave-error"))
 
         await alert.success(interaction, kira_language.get_text("music-alert-leave"))
         await self.get_voice_state(interaction).stop()
+        del self.voice_states[interaction.guild.id]
 
     @nextcord.slash_command(name='now', description="✨ 재생중인 노래의 정보를 표시 해요.", guild_ids=[guild_id])
     async def _now(self, interaction: Interaction):
@@ -432,19 +433,33 @@ class MusicCommand(commands.Cog):
                                 .format(index, self.get_voice_state(interaction).songs[index - 1].source.title))
             self.get_voice_state(interaction).songs.remove(index - 1)
 
+    # @nextcord.slash_command(name="tlqkfdhodksehla", guild_ids=[guild_id])
+    # async def _tlqkfdhodksehla(self, interaction: Interaction):
+    #     await alert.error(interaction, "ddd")
+
     @nextcord.slash_command(name='play', description="✨ 원하는 노래를 불러 줄게!", guild_ids=[guild_id])
     async def _play(self, interaction: Interaction,
                     search: str = nextcord.SlashOption(name='검색',
-                                                       description='✨ 검색할 노래 제목이나 유튜브 URL을 적어 줘!', required=True)):
+                                                       description='✨ 듣고 싶은 노래 제목이나 유튜브 URL을 적어 줘!',
+                                                       required=True)):
+        if self.get_voice_state(interaction).voice is None:
+            return await alert.error(interaction, kira_language.get_text("music-alert-enqueued-error"))
         try:
+            await interaction.response.defer()
             source = await YTDLSource.create_source(interaction, search, loop=self.bot.loop)
-        except YTDLError as e:
-            await alert.error(interaction, '재생할 수 없음: {}'.format(str(e)))
-        else:
             song = Song(source)
+            embed = nextcord.Embed(title=kira_language.get_text("embed-title-success"),
+                                   description=kira_language.get_text("music-alert-enqueued-success").format(source, 0),
+                           color=nextcord.Color.green())
+            embed.set_footer(
+                text=f"Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
+                icon_url=f"{kira_language.get_text('PART1_DEVELOPER_PROFILE_URL')}")
+            embed.timestamp = datetime.now()
+            await interaction.followup.send(embed=embed)
             await self.get_voice_state(interaction).songs.put(song)
-            await alert.success(interaction, kira_language.get_text("music-alert-enqueued")
-                                .format(song.source.title, SongQueue().__len__() + 1))
+        except YTDLError as e:
+            return await alert.error(interaction, '재생할 수 없음: {}'.format(str(e)))
+
 
 def setup(bot):
     bot.add_cog(MusicCommand(bot))

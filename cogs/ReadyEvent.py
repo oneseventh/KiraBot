@@ -18,8 +18,9 @@ class ReadyEvent(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.guild:
-            print(f'[{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] [{message.guild.name} - {message.channel.name}] '
-                  f'{message.author}: {message.content}')
+            if not message.author.bot:
+                print(f'[{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] [{message.guild.name} #{message.channel.name}]'
+                      f' {message.author}: {message.content}')
 
 
 def setup(bot):

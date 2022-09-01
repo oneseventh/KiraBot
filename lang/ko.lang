@@ -23,7 +23,9 @@ music-alert-leave-error: 들어가 있는 음성 채널이 없어!
 music-alert-skip: 노래를 넘겼어!
 music-alert-skip-error: 노래가 재생중이지 않아요
 music-alert-now-error: 재생중인 노래가 없어요.
-music-alert-enqueued: ``{0}`` 노래를 대기열에 추가 했어요.<br>대기 순서: ``#{1}``
+music-alert-enqueued-error: 내가 음성 채널에 있을 때만 사용 할 수 있어!
+music-alert-enqueued-success: ``{0}`` 노래를 대기열에 추가 했어요.<br>대기 순서: ``#{1}``
+music-alert-enqueued1: 노래를 대기열에 추가 했어요.
 music-alert-removed-song: ``#{0}`` ``{1}`` 노래를 대기열에서 제거 했어요.
 
 music-embed-title-playing: 재생 중
