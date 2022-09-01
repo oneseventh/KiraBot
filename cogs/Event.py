@@ -87,12 +87,24 @@ class Event(commands.Cog):
                 Embed.add_field(name="Unbanned", value=f"<@{entry.target.id}>got unbanned by<@{entry.user.id}>",
                                 inline=False)
         '''
-        deleter = ""
-        deleter = guild_manager.get_audit_log(before, nextcord.AuditLogAction.guild_update)  # 감사로그에 서버수정있었는지확인 (있으면,
-        # 수정한 사람의 아이디를 반환)
 
-        Embed = nextcord.Embed(title=f"Server updated",
-                               description=f"Server updated by <@{deleter}>", color=0xFFA700)
+        editor = ""
+        async for entry in before.audit_logs(action=nextcord.AuditLogAction.guild_update, limit=1):
+            logtime = guild_manager.int_utc_to_kst(entry.created_at)
+            logtime = int(time.mktime(logtime.timetuple()))
+            runtime = datetime.datetime.now()
+            runtime = int(time.mktime(runtime.timetuple()))
+            if (runtime - logtime) <= 2:  # 현재 시간과 마지막 member_move 감사로그의 시간을 비교함
+                editor = entry.user.id
+            else:
+                editor = ""
+            print(f"{logtime}, {runtime}")
+        if editor == "":
+            Embed = nextcord.Embed(title=f"Server updated",
+                                   description=f"Server updated by Unknown", color=0xFFA700)
+        else:
+            Embed = nextcord.Embed(title=f"Server updated",
+                                   description=f"Server updated by <@{editor}>", color=0xFFA700)
         Embed.set_author(name=after.name, icon_url=after.icon)
         if before.name != after.name:
             Embed.add_field(name="Name", value=f"{before.name} → {after.name}", inline=False)
@@ -195,19 +207,69 @@ class Event(commands.Cog):
         global Embed
         log_channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
         if str(channel.type) == 'text':
-            Embed = nextcord.Embed(title="텍스트 채널이 생성되었습니다")
+            creater = ""
+            async for entry in channel.guild.audit_logs(action=nextcord.AuditLogAction.channel_create, limit=1):
+                logtime = guild_manager.int_utc_to_kst(entry.created_at)
+                logtime = int(time.mktime(logtime.timetuple()))
+                runtime = datetime.datetime.now()
+                runtime = int(time.mktime(runtime.timetuple()))
+                if (runtime - logtime) <= 2:  # 현재 시간과 마지막 member_move 감사로그의 시간을 비교함
+                    creater = entry.user.id
+                else:
+                    creater = ""
+                print(f"{logtime}, {runtime}")
+            if creater == "":
+                Embed = nextcord.Embed(title=f"Channel Created",
+                                       description=f"Channel created by Unknown", color=0xFFA700)
+            else:
+                Embed = nextcord.Embed(title=f"Channel Created",
+                                       description=f"Channel created by <@{creater}>", color=0xFFA700)
+            Embed.add_field(name="name", value=f"{channel}", inline=True)
+            Embed.add_field(name="채널이 생성된 시일", value=f"{guild_manager.utc_to_kst(channel.created_at)}", inline=False)
         elif str(channel.type) == 'voice':
-            Embed = nextcord.Embed(title="보이스 채널이 생성되었습니다")
+            creater = ""
+            async for entry in channel.guild.audit_logs(action=nextcord.AuditLogAction.channel_create, limit=1):
+                logtime = guild_manager.int_utc_to_kst(entry.created_at)
+                logtime = int(time.mktime(logtime.timetuple()))
+                runtime = datetime.datetime.now()
+                runtime = int(time.mktime(runtime.timetuple()))
+                if (runtime - logtime) <= 2:  # 현재 시간과 마지막 member_move 감사로그의 시간을 비교함
+                    creater = entry.user.id
+                else:
+                    creater = ""
+                print(f"{logtime}, {runtime}")
+            if creater == "":
+                Embed = nextcord.Embed(title=f"Channel Created",
+                                       description=f"Voice Channel created by Unknown", color=0xFFA700)
+            else:
+                Embed = nextcord.Embed(title=f"Channel Created",
+                                       description=f"Voice Channel created by <@{creater}>", color=0xFFA700)
+            Embed.add_field(name="name", value=f"{channel}", inline=True)
+            Embed.add_field(name="채널이 생성된 시일", value=f"{guild_manager.utc_to_kst(channel.created_at)}", inline=False)
         elif str(channel.type) == 'category':
-            Embed = nextcord.Embed(title="카테고리 채널이 생성되었습니다")
-        Embed.add_field(name="name", value=f"{channel}", inline=True)
-        Embed.add_field(name="채널이 생성된 시일", value=f"{guild_manager.utc_to_kst(channel.created_at)}", inline=False)
-        Embed.add_field(name="Category", value=f"{channel.category}", inline=False)
-        Embed.add_field(name="position", value=f"{channel.position}", inline=False)
+            creater = ""
+            async for entry in channel.guild.audit_logs(action=nextcord.AuditLogAction.channel_create, limit=1):
+                logtime = guild_manager.int_utc_to_kst(entry.created_at)
+                logtime = int(time.mktime(logtime.timetuple()))
+                runtime = datetime.datetime.now()
+                runtime = int(time.mktime(runtime.timetuple()))
+                if (runtime - logtime) <= 2:  # 현재 시간과 마지막 member_move 감사로그의 시간을 비교함
+                    creater = entry.user.id
+                else:
+                    creater = ""
+                print(f"{logtime}, {runtime}")
+            if creater == "":
+                Embed = nextcord.Embed(title=f"Category Created",
+                                       description=f"Category created by Unknown", color=0xFFA700)
+            else:
+                Embed = nextcord.Embed(title=f"Category Created",
+                                       description=f"Category created by <@{creater}>", color=0xFFA700)
+            Embed.add_field(name="Category", value=f"{channel.category}", inline=False)
+            Embed.add_field(name="채널이 생성된 시일", value=f"{guild_manager.utc_to_kst(channel.created_at)}", inline=False)
         Embed.add_field(name="IDs", value=f"```diff\n+ {channel.id} (channel) \n+ "
                                           f"{int(channel.guild.id)} (guild)```", inline=False)
         Embed.set_footer(text="Developed by 동건#3038")
-        await log_channel.send(channel.last_message)
+        await log_channel.send(embed=Embed)
 
     # 채널이 삭제되었을 때, 선택된 로그채널로 로그메세지를 전송합니다.
     @commands.Cog.listener()
@@ -285,11 +347,11 @@ class Event(commands.Cog):
                 deleter = ""
                 deleter = await guild_manager.get_audit_log(member.guild, nextcord.AuditLogAction.member_disconnect,
                                                             member.id)
-                if member.id == deleter:
+                if member.id == deleter.id:
                     embed = nextcord.Embed(title="보이스 채널에서 나갔습니다", color=0x37393E)
                 else:
                     embed = nextcord.Embed(title="보이스 채널에서 강퇴당하였습니다",
-                                           description=f"Kicked by <@{deleter}>", color=0x37393E)
+                                           description=f"Kicked by <@{deleter.id}>", color=0x37393E)
                 embed.set_author(name=member, icon_url=member.display_avatar)
                 embed.add_field(name="Channel", value=f"[<#{before.channel.id}>]({before.channel.jump_url})",
                                 inline=True)
@@ -297,11 +359,11 @@ class Event(commands.Cog):
                 deleter = ""
                 deleter = await guild_manager.get_audit_log(member.guild, nextcord.AuditLogAction.member_move,
                                                             member.id)
-                if member.id == deleter:
+                if member.id == deleter.id:
                     embed = nextcord.Embed(title="보이스 채널이동을 하였습니다", color=0x37393E)
                 else:
                     embed = nextcord.Embed(title="보이스채널 이동을 당하였습니다",
-                                           description=f"Moved by <@{deleter}>", color=0x37393E)
+                                           description=f"Moved by <@{deleter.id}>", color=0x37393E)
                 embed.set_author(name=member, icon_url=member.display_avatar)
                 embed.add_field(name="Before Channel", value=f"[<#{before.channel.id}>]({before.channel.jump_url}) ",
                                 inline=True)
