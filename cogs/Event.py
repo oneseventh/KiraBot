@@ -315,10 +315,10 @@ class Event(commands.Cog):
         Embed.add_field(name="Name", value=f"{channel}", inline=True)
         # alert.embed.field.title.name: Name
         Embed.add_field(name="Created Date", value=f"``{guild_manager.utc_to_kst(channel.created_at)}`` (KST)",
-                            inline=False)
+                        inline=False)
         # alert.embed.field.channel.created.date: Created Date
         Embed.add_field(name="ID", value=f"```diff\n+ {channel.id} (channel) \n+ "
-                                          f"{int(channel.guild.id)} (guild)```", inline=False)
+                                         f"{int(channel.guild.id)} (guild)```", inline=False)
         # alert.embed.field.title.id: ID
         Embed.set_footer(text="Developed by 동건#3038")
         # alert.embed.footer.title: Developed by 동건#3038
@@ -402,7 +402,7 @@ class Event(commands.Cog):
             now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec), inline=False)
         # alert.embed.field.title.deleted.date: Deleted Date
         Embed.add_field(name="ID", value=f"```diff\n+ {channel.id} (channel) \n+ "
-                                          f"{int(channel.guild.id)} (guild)```", inline=False)
+                                         f"{int(channel.guild.id)} (guild)```", inline=False)
         # alert.embed.field.title.id: ID
         Embed.set_footer(text="Developed by 동건#3038")
         # alert.embed.footer.title: Developed by 동건#3038
@@ -415,28 +415,36 @@ class Event(commands.Cog):
         checking = False
         global embed
         if str(channel.type) == 'category':
-            embed = nextcord.Embed(title=f"{before.name} 카테고리가 업데이트 되었습니다", color=0xFFA700)
+            embed = nextcord.Embed(title=f"Category updated [{before.name}]", color=0xFFA700)
+            # alert.embed.title.guild.channel.category.updated: 카테고리가 업데이트 되었습니다 [{0}]
         else:
-            embed = nextcord.Embed(title=f"{before.name} 채널이 업데이트 되었습니다", color=0xFFA700)
-
+            embed = nextcord.Embed(title=f"Channel updated [{before.name}]", color=0xFFA700)
+            # alert.embed.title.guild.channel.updated: Channel updated [{0}]
         if before.name is not after.name:
-            embed.add_field(name="이름", value=f"{before.name} → {after.name}", inline=False)
+            embed.add_field(name="Name", value=f"{before.name} → {after.name}", inline=False)
+            # alert.embed.field.title.guild.channel.name.updated: Name
             checking = True
         if before.category is not after.category:
-            embed.add_field(name="카테고리", value=f"{before.category} → {after.category}", inline=False)
+            embed.add_field(name="Category", value=f"{before.category} → {after.category}", inline=False)
+            # alert.embed.field.title.guild.channel.category.updated: Category
             checking = True
         if before.topic is not after.topic:
-            embed.add_field(name="변경전 채널주제", value=f"{before.topic}", inline=True)
-            embed.add_field(name="변경후 채널주제", value=f"{after.topic}", inline=True)
+            embed.add_field(name="Previous channel topic", value=f"{before.topic}", inline=True)
+            # alert.embed.field.title.guild.channel.before.topic.updated: Previous channel topic
+            embed.add_field(name="Current channel topic", value=f"{after.topic}", inline=True)
+            # alert.embed.field.title.guild.channel.after.topic.updated: Current channel topic
             checking = True
         if before.nsfw is not after.nsfw:
             if before.nsfw is True:
                 embed.add_field(name="NSFW", value=f"YES → NO", inline=False)
+                # alert.embed.field.title.guild.channel.nsfw.updated: NSFW
             else:
                 embed.add_field(name="NSFW", value=f"NO → YES", inline=False)
+                # alert.embed.field.title.guild.channel.nsfw.updated: NSFW
             checking = True
         if checking:
             embed.set_footer(text="Developed by 동건#3038")
+            # alert.embed.footer.title: Developed by 동건#3038
             await channel.send(embed=embed)
         # 채널의 권한이 추가되면, 선택된 로그채널로 로그메세지를 전송합니다. (미완성)
         '''
@@ -457,61 +465,84 @@ class Event(commands.Cog):
 
         if before.channel != after.channel:
             if before.channel is None and after.channel is not None:
-                embed = nextcord.Embed(title=f"보이스 채널에 입장했습니다", color=0x37393E)
+                embed = nextcord.Embed(title=f"Joined voice channel", color=0x37393E)
+                # alert.embed.title.guild.voice.state.channel.joined: Joined voice channel
                 embed.set_author(name=member, icon_url=member.display_avatar)
                 embed.add_field(name="Channel", value=f"[<#{after.channel.id}>]({after.channel.jump_url})", inline=True)
+                # alert.embed.field.title.guild.voice.state.joined.channel: Channel
             elif before.channel is not None and after.channel is None:
                 deleter = ""
                 deleter = await guild_manager.get_audit_log(member.guild, nextcord.AuditLogAction.member_disconnect,
                                                             member.id)
                 if member.id == deleter:
-                    embed = nextcord.Embed(title="보이스 채널에서 나갔습니다", color=0x37393E)
+                    embed = nextcord.Embed(title="Laved voice channel", color=0x37393E)
+                    # alert.embed.title.guild.voice.state.channel.leave: Laved voice channel
                 else:
-                    embed = nextcord.Embed(title="보이스 채널에서 강퇴당하였습니다",
+                    embed = nextcord.Embed(title="Kicked from voice channel",
                                            description=f"Kicked by <@{deleter}>", color=0x37393E)
+                    # alert.embed.title.guild.voice.state.channel.kicked: Kicked from voice channel
                 embed.set_author(name=member, icon_url=member.display_avatar)
                 embed.add_field(name="Channel", value=f"[<#{before.channel.id}>]({before.channel.jump_url})",
                                 inline=True)
+                # alert.embed.field.title.guild.voice.state.from.channel.leave: Channel
             elif before.channel is not after.channel:
                 deleter = ""
                 deleter = await guild_manager.get_audit_log(member.guild, nextcord.AuditLogAction.member_move,
                                                             member.id)
                 if member.id == deleter:
-                    embed = nextcord.Embed(title="보이스 채널이동을 하였습니다", color=0x37393E)
+                    embed = nextcord.Embed(title="Moved Voice Channel", color=0x37393E)
+                    # alter.embed.field.title.voice.state.updated.moved.voice.channel: Moved voice channel
                 else:
-                    embed = nextcord.Embed(title="보이스채널 이동을 당하였습니다",
+                    embed = nextcord.Embed(title="Moved Voice Channel",
                                            description=f"Moved by <@{deleter}>", color=0x37393E)
+                    # alter.embed.field.title.voice.state.updated.moved.voice.channel: Moved voice channel
                 embed.set_author(name=member, icon_url=member.display_avatar)
                 embed.add_field(name="Before Channel", value=f"[<#{before.channel.id}>]({before.channel.jump_url}) ",
                                 inline=True)
+                # alter.embed.field.title.voice.state.updated.move.channel.before: Before Channel
                 embed.add_field(name="After Channel", value=f"[<#{after.channel.id}>]({after.channel.jump_url}) ",
                                 inline=True)
-            else:
-                embed = nextcord.Embed(title=f"에러가 발생하였습니다!", color=0xFFFFFF)
-                embed.set_author(name=member, icon_url=member.display_avatar)
-                embed.add_field(name="에러구분", value=f"on_voice_state_update", inline=True)
+                # alter.embed.field.title.voice.state.updated.move.channel.after: After Channel
             checking = True
         if before.deaf is not after.deaf or before.mute is not after.mute or before.afk is not after.afk:
-            embed = nextcord.Embed(title=f"{member.name}님의 음성 상태가 변경되었습니다.", color=0x37393E)
+            changer = ""
+            changer = await guild_manager.get_audit_log(member.guild, nextcord.AuditLogAction.member_update, member.id)
+            if member.id == changer:
+                embed = nextcord.Embed(title=f"Voice status updated <@{member.id}>",
+                                       description=f"Updated by Unknown", color=0x37393E)
+                # alert.embed.title.voice.status.updated.by: Voice status updated <@{0}>
+                # alert.embed.description.voice.status.updated.by.unknown: Updated by Unknown
+            else:
+                embed = nextcord.Embed(title=f"Voice status updated <@{member.id}>",
+                                       description=f"Updated by <@{changer}>", color=0x37393E)
+            # alert.embed.title.voice.status.updated.by: Voice status updated <@{0}>
+            # alert.embed.description.voice.status.updated.by: Updated by <@{0}>
             embed.set_author(name=member, icon_url=member.display_avatar)
             if before.deaf is not after.deaf:
                 if before.deaf is True:
                     embed.add_field(name="Deaf", value=f"YES → NO", inline=False)
+                    # alert.embed.field.title.voice.status.updated.deaf: Deaf
                 else:
                     embed.add_field(name="Deaf", value=f"NO → YES", inline=False)
+                    # alert.embed.field.title.voice.status.updated.deaf: Deaf
             if before.mute is not after.mute:
                 if before.mute is True:
                     embed.add_field(name="Mute", value=f"YES → NO", inline=False)
+                    # alert.embed.field.title.voice.status.updated.mute: Mute
                 else:
                     embed.add_field(name="Mute", value=f"NO → YES", inline=False)
+                    # alert.embed.field.title.voice.status.updated.mute: Mute
             if before.afk is not after.afk:
                 if before.afk is True:
                     embed.add_field(name="AFK", value=f"YES → NO", inline=False)
+                    # alert.embed.field.title.voice.status.updated.afk: AFK
                 else:
                     embed.add_field(name="AFK", value=f"NO → YES", inline=False)
+                    # alert.embed.field.title.voice.status.updated.afk: AFK
             checking = True
         if checking:
             embed.set_footer(text="Developed by 동건#3038")
+            # alert.embed.footer.title: Developed by 동건#3038
             await channel.send(embed=embed)
 
     # 비공개 채널이 수정되었을 때, 선택된 로그채널로 로그메세지를 전송합니다.
@@ -521,28 +552,36 @@ class Event(commands.Cog):
         checking = False
 
         if str(channel.type) == 'category':
-            embed = nextcord.Embed(title=f"{before.name} 카테고리가 업데이트 되었습니다", color=0xFFF700)
+            embed = nextcord.Embed(title=f"Category updated [{before.name}]", color=0xFFF700)
+            # alert.embed.title.private.channel.category.updated: Category updated [{0}]
         else:
-            embed = nextcord.Embed(title=f"{before.name} 채널이 업데이트 되었습니다", color=0xFFF700)
-
+            embed = nextcord.Embed(title=f"Channel updated [{before.name}]", color=0xFFF700)
+            # alert.embed.title.private.channel.channel.updated: Channel updated [{0}]
         if before.name != after.name:
             embed.add_field(name="Channel name", value=f"{before.name} → {after.name}", inline=False)
+            # alert.embed.field.title.private.channel.name.updated: Channel name
             checking = True
         if before.category != after.category:
             embed.add_field(name="Cartegory name", value=f"{before.category} → {after.category}", inline=False)
+            # alert.embed.field.title.private.channel.category.name.updated: Category name
             checking = True
         if before.topic != after.topic:
-            embed.add_field(name="변경전 채널주제", value=f"{before.topic}", inline=True)
-            embed.add_field(name="변경후 채널주제", value=f"{after.topic}", inline=True)
+            embed.add_field(name="Previous Channel topic", value=f"{before.topic}", inline=True)
+            # alert.embed.field.title.private.channel.previous.topic.updated: Previous Channel topic
+            embed.add_field(name="Current channel topic", value=f"{after.topic}", inline=True)
+            # alert.embed.field.title.private.channel.current.topic.updated: Current Channel topic
             checking = True
         if before.nsfw != after.nsfw:
             if before.nsfw:
                 embed.add_field(name="NSFW", value=f"YES → NO", inline=False)
+                # alert.embed.fields.title.private.channel.nsfw.updated: NSFW
             else:
                 embed.add_field(name="NSFW", value=f"NO → YES", inline=False)
+                # alert.embed.fields.title.private.channel.nsfw.updated: NSFW
             checking = True
         if checking:
             embed.set_footer(text="Developed by 동건#3038")
+            # alert.embed.footer.title: Developed by 동건#3038
             await channel.send(embed=embed)
 
         # 역할이 생성되었을 때, 선택된 로그채널로 로그메세지를 전송합니다.
@@ -550,10 +589,13 @@ class Event(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_role_create(self, role):
         channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
-        embed = nextcord.Embed(title=f"<{role.name}> 역할이 생성되었습니다", color=0x00FF22)
-        embed.add_field(name="IDs", value=f"```diff\n+ {role.id} (role) \n+ {int(role.guild.id)} (guild)```",
+        embed = nextcord.Embed(title=f"Role created [{role.name}]", color=0x00FF22)
+        # alert.embed.title.role.created: Role created [{0}]
+        embed.add_field(name="ID", value=f"```diff\n+ {role.id} (role) \n+ {int(role.guild.id)} (guild)```",
                         inline=False)
+        # alert.embed.field.title.id: ID
         embed.set_footer(text="Developed by 동건#3038")
+        # alert.embed.footer.title: Developed by 동건#3038
         await channel.send(embed=embed)
 
         # 역할이 삭제되었을 때, 선택된 로그채널로 로그메세지를 전송합니다.
@@ -561,10 +603,13 @@ class Event(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role):
         channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
-        embed = nextcord.Embed(title=f"<{role.name}> 역할이 삭제되었습니다", color=0xFF0000)
-        embed.add_field(name="IDs", value=f"```diff\n+ {role.id} (role) \n+ {int(role.guild.id)} (guild)```",
+        embed = nextcord.Embed(title=f"<Role deleted [{role.name}]", color=0xFF0000)
+        # alert.embed.title.role.deleted: Role deleted [{0}]
+        embed.add_field(name="ID", value=f"```diff\n+ {role.id} (role) \n+ {int(role.guild.id)} (guild)```",
                         inline=False)
+        # alert.embed.field.title.id: ID
         embed.set_footer(text="Developed by 동건#3038")
+        # alert.embed.footer.title: Developed by 동건#3038
         await channel.send(embed=embed)
 
         # 역할이 수정되었을 때, 선택된 로그채널로 로그메세지를 전송합니다.
@@ -573,12 +618,15 @@ class Event(commands.Cog):
     async def on_guild_role_update(self, before, after):
         channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
         checking = False
-        embed = nextcord.Embed(title=f"<{before.name}> 역할이 업데이트 되었습니다", color=after.colour)
+        embed = nextcord.Embed(title=f"Role updated [{before.name}]", color=after.colour)
+        # alert.embed.title.role.updated: Role updated [{0}]
         if before.name != after.name:
-            embed.add_field(name="이름", value=f"{before.name} -> {after.name}", inline=False)
+            embed.add_field(name="Name", value=f"{before.name} -> {after.name}", inline=False)
+            # alert.embed.field.title.role.name: Name
             checking = True
         if before.colour != after.colour:
-            embed.add_field(name="색상", value=f"{before.colour} -> {after.colour}(임베드색상)", inline=False)
+            embed.add_field(name="Color", value=f"{before.colour} -> {after.colour}(Same Embed color)", inline=False)
+            # alert.embed.field.title.role.color: Color
             checking = True
         # 기능은 잘 작동하나,,, 역할 한개가 바뀌면 position이 모두 변경되는 바람에 쓸대없이 로그메세지를 많이 전송하여... → 주석처리 해둠
         '''
@@ -587,15 +635,19 @@ class Event(commands.Cog):
             checking = True
         '''
         if before.hoist != after.hoist:
-            embed.add_field(name="역할 분리여부(Hoist)", value=f"{before.hoist} -> {after.hoist}", inline=False)
+            embed.add_field(name="Hoist", value=f"{before.hoist} -> {after.hoist}", inline=False)
+            # alert.embed.field.title.role.hoist: Hoist
             checking = True
         if before.mentionable != after.mentionable:
-            embed.add_field(name="멘션", value=f"{before.mentionable} -> {after.mentionable}", inline=False)
+            embed.add_field(name="Mentionable", value=f"{before.mentionable} -> {after.mentionable}", inline=False)
             checking = True
+            # alert.embed.field.title.role.mentionable: Mentionable
         if checking:
-            embed.add_field(name="IDs", value=f"```diff\n+ {after.id} (role) \n+ {int(after.guild.id)} (guild)```",
+            embed.add_field(name="ID", value=f"```diff\n+ {after.id} (role) \n+ {int(after.guild.id)} (guild)```",
                             inline=False)
+            # alert.embed.field.title.id: ID
             embed.set_footer(text="Developed by 동건#3038")
+            # alert.embed.footer.title: Developed by 동건#3038
             await channel.send(embed=embed)
 
         # 유저의 서버 프로필 정보가 수정되었을 때, 선택된 로그채널로 로그메세지를 전송합니다.
@@ -604,14 +656,18 @@ class Event(commands.Cog):
     async def on_member_update(self, before, after):
         global checking
         channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
-        embed = nextcord.Embed(title=f"{after.name}님의 서버 정보가 수정되었습니다", color=0x00FF00)
-        checkig = False
+        embed = nextcord.Embed(title=f"Profile(server) updated <@{after.id}>", color=0xD4FF7D)
+        # alert.embed.title.server.profile.updated: Profile(server) updated <@{0}>
+        checking = False
         if before.display_name != after.display_name:
             embed.add_field(name="Nickname", value=f"{before.display_name} -> {after.display_name}", inline=False)
+            # alert.embed.field.title.server.profile.nickname: Nickname
             checking = True
         if checking:
             embed.add_field(name="Guild ID", value=f"```diff\n+ {int(after.guild.id)}```", inline=False)
+            # alert.embed.field.title.guild.id: Guild ID
             embed.set_footer(text="Developed by 동건#3038")
+            # alert.embed.footer.title: Developed by 동건#3038
             await channel.send(embed=embed)
 
         # 유저의 개인 프로필 정보가 수정되었을 때, 선택된 로그채널로 로그메세지를 전송합니다.
@@ -619,22 +675,28 @@ class Event(commands.Cog):
     @commands.Cog.listener()
     async def on_user_update(self, before, after):
         channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
-        embed = nextcord.Embed(title=f"{after.name}님의 프로필 정보가 수정되었습니다", color=0x00FF00)
+        embed = nextcord.Embed(title=f"Profile updated {after.id}", color=0xD4FF7D)
+        # alert.embed.title.personal.profile.updated: Profile updated <@{0}>
         checking = False
         if before.name != after.name:
             embed.add_field(name="Profile name", value=f"{before.name} -> {after.name}", inline=False)
+            # alert.embed.field.title.personal.profile.name: Profile name
             checking = True
         if before.discriminator != after.discriminator:
             embed.add_field(name="discriminator", value=f"{before.discriminator} -> {after.discriminator}",
                             inline=False)
+            # alert.embed.field.title.personal.profile.discriminator: discriminator
             checking = True
         if before.avatar != after.avatar:
             embed.add_field(name="Profile avatar", value=f"{before.display_avatar} ```->``` {after.display_avatar}",
                             inline=False)
+            # alert.embed.field.title.personal.profile.avatar: Profile avatar
             checking = True
         if checking:
             embed.add_field(name="User ID", value=f"```diff\n+ {int(after.id)} (user)```", inline=False)
+            # alert.embed.field.title.user.id: User ID
             embed.set_footer(text="Developed by 동건#3038")
+            # alert.embed.footer.title: Developed by 동건#3038
             await channel.send(embed=embed)
 
 
