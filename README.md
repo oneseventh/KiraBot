@@ -5,7 +5,7 @@ KiraBot은 한국의 학생 3명이 모여 만든 디스코드 봇입니다!<br>
 급식 조회, 책 조회, 노래 재생, 로그 기록 등등.. 다양한 기능이 있으며,<br>
 명령어는 ``빗금 명령어``로 사용 할 수 있어요!<br><br>
 
-<a href="https://discord.com/api/oauth2/authorize?client_id=703956235900420226&permissions=126016&scope=bot"><img width="100px" src="https://user-images.githubusercontent.com/68435966/187939033-005b1748-12d9-41e8-8e3b-8de047bbd0ae.png"/></a><br><br><br>
+<a href="https://discord.com/api/oauth2/authorize?client_id=1011602097801809990&permissions=8&scope=applications.commands%20bot"><img width="100px" src="https://user-images.githubusercontent.com/68435966/187939033-005b1748-12d9-41e8-8e3b-8de047bbd0ae.png"/></a><br><br><br>
 
 ``✋ 다른 봇에서 본거같은 기능이 많은데, 이 봇은 왜 만들었나요?``<br><br>
 다른 봇들에는 좋은 기능이 많습니다. 하지만, 그 좋은 기능이 여러 봇들에 나뉘어져 있는게 불편했고<br>
