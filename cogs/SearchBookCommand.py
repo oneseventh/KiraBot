@@ -1,3 +1,8 @@
+"""
+    #제작: @17th
+    #최종 수정일: 2022년 08월 31일
+"""
+
 import math
 import traceback
 from datetime import datetime
@@ -16,9 +21,10 @@ class SearchBookCommand(commands.Cog):
 
     guild_id = main.GUILD_ID
 
-    @nextcord.slash_command(name="search", description="✨ 책 이름을 알려주면 책을 검색해 줄게!", guild_ids=[guild_id])
+    @nextcord.slash_command(name="search", description="✨ 책 이름을 알려주면 책을 검색해 줄게! - 개발 {0}"
+                            .format(kira_language.get_text("PART1_DEVELOPER_NAME")), guild_ids=[guild_id])
     async def search_book(self, interaction: nextcord.Interaction,
-                          bookname: str = nextcord.SlashOption(name="책_이름", description="✨ 책 이름을 입력해 줘!", min_length=3),
+                          bookname: str = nextcord.SlashOption(name="이름", description="✨ 책 이름을 입력해 줘!", min_length=3),
                           page: int = nextcord.SlashOption(name="페이지", description="✨ 검색할 페이지를 알려 줘! (선택)",
                                                            min_value=1, max_value=1000, required=False)):
         if page is None:  # 만약 페이지가 지정 되어 있지 않다면,
@@ -42,12 +48,14 @@ class SearchBookCommand(commands.Cog):
             if data['meta']['total_count'] != 0:
                 if data['meta']['pageable_count'] >= 1000:
                     embed = nextcord.Embed(
-                        title=f":book: '{bookname}' {kira_language.get_text('search-book-search-result')} **({page}/{data['meta']['pageable_count']})**",
+                        title=f":book: '{bookname}' {kira_language.get_text('search-book-search-result')} "
+                              f"**({page}/{data['meta']['pageable_count']})**",
                         description=f"``{kira_language.get_text('search-book-embed-field-overflowed')}``\n"
                                     f"**{data['documents'][content]['title']}**", color=nextcord.Color.green())
                 else:
                     embed = nextcord.Embed(
-                        title=f":book: '{bookname}' {kira_language.get_text('search-book-search-result')} **({page}/{data['meta']['pageable_count']})**",
+                        title=f":book: '{bookname}' {kira_language.get_text('search-book-search-result')} "
+                              f"**({page}/{data['meta']['pageable_count']})**",
                         description=f"**{data['documents'][content]['title']}**", color=nextcord.Color.green())
                 embed.set_thumbnail(url=f"{data['documents'][content]['thumbnail']}")
                 embed.add_field(name=kira_language.get_text("search-book-embed-field-author"),
@@ -69,7 +77,8 @@ class SearchBookCommand(commands.Cog):
                                 value=f"```{cut_text(data['documents'][content]['contents'], 150)}```",
                                 inline=False)
                 embed.set_footer(
-                    text=f"Request by {interaction.user} ・ Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
+                    text=f"Request by {interaction.user} ・ Developed by "
+                         f"{kira_language.get_text('PART1_DEVELOPER_NAME')}",
                     icon_url=f"{interaction.user.display_avatar}")
                 embed.timestamp = datetime.now()
                 await interaction.response.send_message(embed=embed)
@@ -79,7 +88,8 @@ class SearchBookCommand(commands.Cog):
                     description=f"{kira_language.get_text('search-book-search-no-result-2')} ``{bookname}``",
                     color=nextcord.Color.red())
                 embed.set_footer(
-                    text=f"Request by {interaction.user} ・ Developed by {kira_language.get_text('PART1_DEVELOPER_NAME')}",
+                    text=f"Request by {interaction.user} ・ Developed by "
+                         f"{kira_language.get_text('PART1_DEVELOPER_NAME')}",
                     icon_url=f"{interaction.user.display_avatar}")
                 embed.timestamp = datetime.now()
                 await interaction.response.send_message(embed=embed)

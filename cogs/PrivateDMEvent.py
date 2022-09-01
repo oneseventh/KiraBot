@@ -1,3 +1,9 @@
+"""
+    #제작: @17th
+    #최종 수정일: 2022년 08월 28일
+
+"""
+
 import random
 import time
 
@@ -10,7 +16,7 @@ class PrivateDMEvent(commands.Cog):
 
     hello_msg = ["안녕", "ㅎㅇ", "하이"]
     goodnight_msg = ["잘자"]
-    community_msg = ["게이야", "우흥", "아주 빠르게"]
+    follow_me_msg = ["따라해", "따라해봐", "해봐"]
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -33,9 +39,11 @@ class PrivateDMEvent(commands.Cog):
                     else:
                         await message.add_reaction("💤")
                         await message.channel.send('뭐해! 얼른 자!')
+                elif message.content.startswith(tuple(self.follow_me_msg)):
+                    await message.channel.send(message.content[str(message.content).index(" "):])
                 else:
-                    if random.randrange(1, 11) == 6:
-                        await message.add_reaction("❤")
+                    if random.randrange(1, 11) == 5:
+                        await message.channel.send("{0}..?".format(message.content))
 
 
 def setup(bot):

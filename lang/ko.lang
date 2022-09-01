@@ -3,8 +3,21 @@ embed-title-developing-info: 아직 개발중이야..! 금방 만들어 올게! 
 embed-title-success: :white_check_mark:  성공!
 embed-title-error: ❌  .. 앗!
 embed-title-info: :information_source:  정보
-
+embed-title-no-permission: :no_entry_sign:  권한이 없어!
+no-permission: 명령어를 실행 하기 위한 권한이 부족해!
 still-developed: 이 부분은 아직 잘 모르는 부분이야..<br>금방 배워 올게..!
+
+game-odd-embed-title: :game_die:  홀짝 게임
+game-odd-embed-win: 제가 졌어요.. 😢<br><br>:white_small_square:  **제가 고른 값**  ``{0}``<br><br>:white_small_square:  **당신이 고른 값**  ``{1}``
+game-odd-embed-defeat: 제가 이겼어요! 😊 <br><br>:white_small_square:  **제가 고른 값**  ``{0}``<br><br>:white_small_square:  **당신이 고른 값**  ``{1}``
+game-death-embed-title: 💣 펑!
+game-death-embed-description: {0} 사망.
+game-death-error-wrong-args: 2명에서 10명의 플레이어를 멘션 해 줘!
+
+change-nick-error-message-nick-too-long: 닉네임은 32자 이하로 설정해줘!
+change-nick-embed-success: 닉네임 변경 성공!<br>{0}의 닉네임을 ``{1}`` 으로 바꿧어!
+
+clean-alert-success: 메시지 ``{0}개``를 삭제 했어!
 
 music-error-message-not-found: {}에 대한 결과를 찾을 수 없습니다.
 music-error-message-not-matches: {}에 일치 하는 결과를 찾을 수 없습니다.
@@ -16,7 +29,9 @@ music-duration-seconds: {0}초
 music-alert-queue-empty: 대기열이 비어 있어
 music-alert-join: <#{0}> 채널에 입장 했어!
 music-alert-join-error: 먼저 음성 채널에 접속 해줘!
+music-alert-already-pause: 노래가 이미 멈춰 있어!
 music-alert-pause: 노래를 멈췄어!
+music-alert-already-resume: 노래가 이미 재생 중 이야!
 music-alert-resume: 노래를 다시 재생 할게!
 music-alert-leave: 음성 채널을 나갔어!
 music-alert-leave-error: 들어가 있는 음성 채널이 없어!
@@ -28,14 +43,14 @@ music-alert-enqueued-success: ``{0}`` 노래를 대기열에 추가 했어요.<b
 music-alert-enqueued1: 노래를 대기열에 추가 했어요.
 music-alert-removed-song: ``#{0}`` ``{1}`` 노래를 대기열에서 제거 했어요.
 
-music-embed-title-playing: 재생 중
-music-embed-field-description: 설명
-music-embed-field-duration: 길이
-music-embed-field-view: 조회 수
-music-embed-field-like: 좋아요
-music-embed-field-date: 업로드 날짜
-music-embed-field-left: 남은 노래
-music-embed-field-requester: 신청자
+music-embed-title-playing: 🎵  재생 중
+music-embed-field-description: :white_medium_small_square:  설명
+music-embed-field-duration: :white_small_square: 길이
+music-embed-field-view: :white_small_square: 조회 수
+music-embed-field-like: :white_small_square: 좋아요
+music-embed-field-date: :white_small_square: 업로드 날짜
+music-embed-field-time: :white_small_square: 신청 시간
+music-embed-field-requester: :white_small_square: 신청자
 music-queue-embed-title-playlist: 재생 목록
 music-queue-embed-field-now-playing: 재생 중
 music-queue-embed-field-pages: 페이지 **{0} / {1}**
@@ -47,13 +62,14 @@ profile-embed-joined-at: 서버에 참여한 날짜
 profile-embed-is-admin: 관리자 인가요?
 
 school-meal-incorrect-date-type: 잘못된 날짜 형식입니다! (예: 20220828)
-school-meal-embed-title: 급식 정보
+school-meal-error-school-not-found: ``{0}`` 학교를 찾을 수 없어!
+school-meal-embed-title: {0}의 급식 정보
 school-meal-embed-today: 의 급식이야!  ✨
 school-meal-embed-no-data: 의 급식 정보는 없어..  :cry:
-school-meal-embed-breakfast: :fork_knife_plate: 조식
-school-meal-embed-lunch: :fork_knife_plate: 중식
-school-meal-embed-dinner: :fork_knife_plate: 석식
-school-meal-embed-kcal: 칼로리는..
+school-meal-embed-breakfast: :white_medium_small_square:  조식
+school-meal-embed-lunch: :white_medium_small_square:  중식
+school-meal-embed-dinner: :white_medium_small_square:  석식
+school-meal-embed-kcal: :white_small_square: 칼로리는..
 
 search-book-value-error-1: 0 이상의 값을 입력하주세요.
 search-book-search-result: 검색 결과
@@ -70,20 +86,100 @@ search-book-embed-field-book-details: 책 설명
 
 memo-button-text-download: 다운
 memo-button-text-remove: 삭제
+memo-error-created-max: 내 기억력 한계로 메모는 10개까지만 기억할 수 있어..
 memo-write-modal-title: 메모 쓰기
 memo-list-info-text: ✨ 보고 싶은 메모를 목록에서 선택해 줘!
-memo-embed-title: ✨ 메모를 찾았어!
+memo-embed-title: 📝 메모를 찾았어!
 memo-embed-description: 나에게 남겨준 메모야!
-memo-embed-field-memo-num: 메모 번호
-memo-embed-field-memo-name: 메모 이름
-memo-embed-field-memo-time: 메모한 시간
-memo-embed-field-memo-content: 메모 내용
+memo-embed-field-memo-num: :white_small_square: 메모 번호
+memo-embed-field-memo-name: :white_small_square: 메모 이름
+memo-embed-field-memo-time: :white_small_square: 메모한 시간
+memo-embed-field-memo-content: :white_medium_small_square: 메모 내용
 memo-remove-success: 메모를 깔끔하게 잊었어!
 memo-error-name-already-exist: 동일한 이름의 메모가 이미 있어!
 memo-error-not-found: 메모를 못 찾았어..
 memo-success-write: 메모를 작성했어!<br>제대로 기억 해 둘게!
 memo-download-success: 메모 파일을 개인 DM으로 보내 줬어!<br>개인 DM을 확인 해 줘!
 memo-private-dm-message: 여기, 받아줘! 너가 부탁한 파일 맞지?
+
+log-message-deleted-embed-title: 메시지 삭제됨
+log-message-deleted-embed-description: <#{0}> 에서 메시지가 삭제되었어요.
+log-message-deleted-embed-field-message-content: 삭제된 메시지 내용
+log-message-deleted-embed-field-deleted-date: 삭제된 시간
+
+log-message-edited-embed-title: 메시지 수정됨
+log-message-edited-embed-description: <#{0}> 에서 메시지가 수정되었어요.<br>
+log-message-edited-embed-field-previous-message-content: 수정 전 메시지 내용
+log-message-edited-embed-field-current-message-content: 수정 후 메시지 내용
+log-message-edited-embed-field-edited-date: 수정된 시간
+log-message-edited-embed-field-jump-to: 메시지로 이동
+
+log-guild-updated-embed-title: 서버 설정 변경 됨
+log-guild-updated-embed-unknown-description: Unknown 에 의해 서버 설정이 변경되었어요.
+log-guild-updated-embed-description: <@{}>에 의해 서버 설정이 변경되었어요.
+log-guild-updated-embed-field-server-name: 서버 이름
+log-guild-updated-embed-field-afk-channel: 비활성화 채널
+log-guild-updated-embed-field-afk-timeout: 비활성화 시간 제한
+log-guild-updated-embed-field-verification-level: 보안 수준
+log-guild-updated-embed-field-owner: 서버 주인
+log-guild-updated-embed-field-date: 업데이트 된 시간
+
+log-join-embed-title: 서버에 참가함
+log-join-embed-date: 참가한 시간
+
+log-left-embed-title: 서버에서 나감
+log-left-embed-date: 나간 시간
+
+log-invite-embed-title: 초대 링크 생성됨
+log-invite-embed-description: <#{}> 에서 초대 코드가 생성되었어요.
+log-invite-embed-field-inviter: 만든 이
+log-invite-embed-field-invite-code: 초대 코드
+log-invite-embed-field-invite-expire: 만료까지
+log-invite-embed-field-invite-maxium: 사용 가능 인원
+log-invite-embed-field-invite-maxium-unlimited: ``무제한``
+log-invite-embed-field-is-temporary: 임시 초대 코드인가요?
+
+log-invite-delete-embed-title: 초대 링크 제거됨
+log-invite-delete-embed-description: <#{}> 에서 생성 되었던 초대 코드가 제거 되었어요.
+log-invite-delete-embed-field-invite-code: 초대 코드
+log-invite-delete-embed-field-invite-date: 삭제된 시간
+
+log-guild-channel-chat-created-embed-title: 채팅 채널 생성됨
+log-guild-channel-voice-created-embed-title: 음성 채널 생성됨
+log-guild-channel-category-created-embed-title: 카테고리 생성됨
+log-guild-channel-created-embed-unknown-description: Unknown 에 의해 생성 되었어요.
+log-guild-channel-created-embed-description: <@{}>에 의해 생성 되었어요.
+log-guild-channel-created-embed-field-category-name: 카테고리 이름
+log-guild-channel-created-embed-field-channel: 채널
+log-guild-channel-created-embed-field-channel-created: 생성된 시간
+
+log-guild-channel-chat-deleted-embed-title: 채팅 채널 삭제됨
+log-guild-channel-voice-deleted-embed-title: 음성 채널 삭제됨
+log-guild-channel-category-deleted-embed-title: 카테고리 삭제됨
+log-guild-channel-deleted-embed-unknown-description: Unknown 에 의해 삭제 되었어요.
+log-guild-channel-deleted-embed-description: <@{}>에 의해 삭제 되었어요.
+log-guild-channel-deleted-embed-field-name: 이름
+log-guild-channel-deleted-embed-field-channel-created: 생성된 시간
+log-guild-channel-deleted-embed-field-channel-deleted: 삭제된 시간
+
+log-guild-voice-embed-join-title: 음성 채널에 참가함
+log-guild-voice-embed-quit-title: 음성 채널에서 퇴장함
+log-guild-voice-embed-kicked-title: 음성 채널에서 추방 됨
+log-guild-voice-embed-moved-title: 음성 채널을 이동 함
+log-guild-voice-embed-field-kicked-by: <@{}>에 의해 추방 됨
+log-guild-voice-embed-field-moved-by: <@{}>에 의해 이동 됨
+log-guild-voice-embed-field-before: 이동 전 채널
+log-guild-voice-embed-field-after: 이동 후 채널
+log-guild-voice-embed-force-title: 보이스 설정 변경됨
+log-guild-voice-embed-force-unknown-description: 자신에 의해 자신의 보이스 설정이 변경 되었어요.
+log-guild-voice-embed-force-description: <@{0}>에 의해 <@{1}>의 보이스 설정이 변경 되었어요.
+log-guild-voice-embed-field-deaf: 서버 듣기
+log-guild-voice-embed-field-mute: 서버 말하기
+log-guild-voice-embed-field-afk: AFK
+log-guild-voice-embed-field-channel: 채널
+
+
+
 
 error-embed-title: :skull:  큰 오류가 발생했어..
 error-embed-description-part-1: 날 만든 사람에게 문의해 줘..!<br>로그를 ``logs/error_
@@ -92,7 +188,6 @@ error-embed-description-part-2: .log``에 저장했어!
 PART1_DEVELOPER_NAME: 17th
 PART1_DEVELOPER_PROFILE_URL: https://images-ext-2.discordapp.net/external/WfO_TJDQ71XHUwZ_-OW3AnGMAB90HbPO4gaac6An6dE/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/574411212599590940/a_90e8f0035e42b97ecb16c6ede5cde185.gif
 PART2_DEVELOPER_NAME: 동건
-PART3_DEVELOPER_NAME: 하랑
-PART4_DEVELOPER_NAME: 지민
+PART3_DEVELOPER_NAME: 지민
 
 NONE: (없음)

@@ -1,8 +1,12 @@
+"""
+    #제작: @17th
+    #최종 수정일: 2022년 09월 01일
+"""
+
 import sqlite3
 from datetime import datetime
 
 import nextcord
-from interactions import SelectOption
 from nextcord import Interaction, ui
 from nextcord.ext import commands
 
@@ -22,7 +26,8 @@ class MemoCommand(commands.Cog):
 
     guild_id = main.GUILD_ID
 
-    @nextcord.slash_command(name="memo", description="✨ 나에게 알려줄 메모를 쓰거나 쓴 메모를 확인 할 수 있어!", guild_ids=[guild_id])
+    @nextcord.slash_command(name="memo", description="✨ 새로운 메모를 쓰거나 쓴 메모를 확인 할 수 있어요. - 개발 {0}"
+                            .format(kira_language.get_text("PART1_DEVELOPER_NAME"), guild_ids=[guild_id]))
     async def memo(self, interaction: Interaction,
                    action: int = nextcord.SlashOption(name="행동", choices={"읽기": 1, "쓰기": 2, "삭제": 3},
                                                       description="✨ 메모를 읽을 지, 메모를 새로 쓸지, 메모를 지울 지 알려줘!",
@@ -31,6 +36,8 @@ class MemoCommand(commands.Cog):
             await interaction.response.send_message(f"{kira_language.get_text('memo-list-info-text')}",
                                                     view=MemoListView(interaction.user.id), ephemeral=True)
         elif action == 2:
+            if await get_memo_count(interaction) >= 10:
+                return await alert.error(interaction, kira_language.get_text('memo-error-created-max'))
             await interaction.response.send_modal(WriteMemo())
         elif action == 3:
             await alert.developing(interaction)
@@ -45,7 +52,7 @@ class MemoList(nextcord.ui.Select):
                     nextcord.SelectOption(label=memo[0], value=memo[0], description=memo[1][:30] + "..."))
                 continue
             memo_list.append(nextcord.SelectOption(label=memo[0], value=memo[0], description=memo[1]))
-        super().__init__(placeholder="✨ 메모를 선택해주세요!", min_values=1, max_values=1, options=memo_list)
+        super().__init__(placeholder="✨ 읽을 메모를 선택해 줘!", min_values=1, max_values=1, options=memo_list)
 
     async def callback(self, interaction: Interaction):
         await get_memo(interaction, self.values[0])
@@ -63,15 +70,26 @@ class MemoButton(nextcord.ui.View):
         self.interaction = interaction
         self.memo_name = memo_name
 
-    @nextcord.ui.button(label=kira_language.get_text('memo-button-text-download'),
+    @nextcord.ui.button(label=kira_language.get_text("memo-button-text-download"),
                         style=nextcord.ButtonStyle.gray, emoji="💾")
     async def download(self, button: nextcord.Button, interaction: nextcord.Interaction):
         await download_memo(interaction, interaction.user.id, self.memo_name)
 
-    @nextcord.ui.button(label=kira_language.get_text('memo-button-text-remove'),
+    @nextcord.ui.button(label=kira_language.get_text("memo-button-text-remove"),
                         style=nextcord.ButtonStyle.red, emoji="🔥")
     async def remove(self, button: nextcord.Button, interaction: nextcord.Interaction):
         await remove_memo(interaction, interaction.user.id, self.memo_name)
+
+
+async def get_memo_count(interaction: Interaction):
+    user_id = interaction.user.id
+    conn = sqlite3.connect('././memo.db', isolation_level=None)
+    c = conn.cursor()
+    c.execute("SELECT COUNT(memo_name) FROM memo WHERE user_id = {0}".format(user_id))
+    result = c.fetchone()
+    c.close()
+    conn.close()
+    return int(result[0])
 
 
 async def get_memo(interaction: Interaction, memo_name: str):
@@ -83,10 +101,9 @@ async def get_memo(interaction: Interaction, memo_name: str):
                   (user_id, memo_name))
         result = c.fetchone()
 
-        embed = nextcord.Embed(title=kira_language.get_text("memo-embed-title"),
-                               description=kira_language.get_text("memo-embed-description"),
-                               color=nextcord.Color.random())
-        embed.set_author(name=f"Request by {interaction.user}", icon_url=interaction.user.display_avatar)
+        embed = nextcord.Embed(title=kira_language.get_text("memo-embed-description"),
+                               color=0xffffff)
+        embed.set_author(name=kira_language.get_text("memo-embed-title"))
         embed.add_field(name=kira_language.get_text("memo-embed-field-memo-num"),
                         value=f"``#{result[0]}``", inline=True)
         embed.add_field(name=kira_language.get_text("memo-embed-field-memo-name"),
@@ -127,16 +144,15 @@ def check_memo_exist(user_id: int, memo_name: str):
 
 
 async def download_memo(interaction: Interaction, user_id: int, memo_name: str):
-    file_path = f"././temp/{memo_name}-{user_id}.txt"
+    file_path = f"././temp/{memo_name}.txt"
     with open(file_path, "w", encoding="utf-8") as f:
-        f.write(f"user-id: {str(user_id)}\n")
-        f.write(f"memo-name: {memo_name}\n")
+        f.write(f"메모 이름: {memo_name}\n")
         conn = sqlite3.connect('././memo.db', isolation_level=None)
         c = conn.cursor()
         c.execute("SELECT * FROM memo WHERE user_id = ? AND memo_name = ?", (user_id, memo_name))
         result = c.fetchone()
         c.close()
-        f.write(f"memo:\n{result[4]}")
+        f.write(f"내용:\n{result[4]}")
     await interaction.user.send(f"``{memo_name}-{user_id}.txt`` "
                                 f"{kira_language.get_text('memo-private-dm-message')}",
                                 files=[nextcord.File(file_path)])
@@ -163,7 +179,7 @@ class WriteMemo(nextcord.ui.Modal):
                                       max_length=10, style=nextcord.TextInputStyle.short, required=True)
         self.add_item(self.memo_name)
         self.memo_content = ui.TextInput(label="메모할 내용을 적어줘!",
-                                         max_length=500, style=nextcord.TextInputStyle.paragraph, required=True)
+                                         max_length=2000, style=nextcord.TextInputStyle.paragraph, required=True)
         self.add_item(self.memo_content)
         self.lang = kira_language.get_current_lang()
 
@@ -175,8 +191,8 @@ class WriteMemo(nextcord.ui.Modal):
             memo_content = self.memo_content.value
             conn = sqlite3.connect('././memo.db', isolation_level=None)
             c = conn.cursor()
-            c.execute("INSERT INTO memo (user_id, memo_name, content) VALUES (?, ?, ?)"
-                      , (interaction.user.id, self.memo_name.value, memo_content.replace("'", "'")))
+            c.execute("INSERT INTO memo (user_id, memo_name, content) VALUES (?, ?, ?)",
+                      (interaction.user.id, self.memo_name.value, memo_content.replace("'", "'")))
             conn.commit()
             conn.close()
             await alert.success(interaction,

@@ -10,7 +10,8 @@ intents.message_content = True
 intents.members = True
 intents.voice_states = True
 
-GUILD_ID = 1011601743399890975
+GUILD_ID = 959030740643893309
+channel_id = 0
 language = 'ko'
 
 bot = commands.Bot(command_prefix='!', intents=intents)

@@ -1,3 +1,9 @@
+"""
+    #제작: @17th
+    #최종 수정일: 2022년 08월 27일
+"""
+
+
 class CouldNotSearchAuthKeyException(Exception):
     def __init__(self, error: str = None):
         self.error = error

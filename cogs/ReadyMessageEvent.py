@@ -1,12 +1,15 @@
+"""
+    #제작: @17th
+    #최종 수정일: 2022년 09월 01일
+"""
+
 from datetime import datetime
 
 import nextcord
 from nextcord.ext import commands
 
-import cogs.SearchBookCommand
 
-
-class ReadyEvent(commands.Cog):
+class ReadyMessageEvent(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -24,4 +27,4 @@ class ReadyEvent(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(ReadyEvent(bot))
+    bot.add_cog(ReadyMessageEvent(bot))
