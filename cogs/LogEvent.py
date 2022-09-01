@@ -90,7 +90,7 @@ class Event(commands.Cog):
         # alert.embed.footer.title: Developed by 동건#3038
         await channel.send(embed=Embed)  # 로그채널에 메세지를 전송합니다.
 
-    # 서버 정보가 수정되었을 때, 선택된 로그채널로 로그메세지를 전송합니다.
+    # 서버 정보가 수정되었을 때, 선택된 로그채널로 로그메세지를 전송합니다
     @commands.Cog.listener()
     async def on_guild_update(self, before, after):
         channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
