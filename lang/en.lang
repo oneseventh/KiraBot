@@ -1,0 +1,83 @@
+embed-title-developing: :cry:  Sorry..
+embed-title-developing-info: developing feature.. coming soon! ✨
+embed-title-success: :white_check_mark:  Success!
+embed-title-error: :skull:  Error!
+
+still-developed: It's a function under development.<br>We will develop it as soon as possible.
+song-stopped: stop the song!
+song-already-stopped: already stopped!
+song-resumed: play the song!
+song-already-resumed: already playing!
+song-skipped: skipped song!
+leave-voice-room: disconnect from voice chennel
+song-no-playing: There is no song playing!
+song-want-to-listen: Do you want listening song?<br>Press "Request" Button to listen the song!
+bot-request-enter-voice-channel-if-user-not-joined-voice-channel: You must be in a voice channel to use this command!
+
+modal-title-song-queue: Song request form
+modal-label-want-youtube-link:
+
+music-bot-button-text-reenter: Return
+
+music-bot-embed-duration: **Song Duration**
+music-bot-embed-viewer: **View Count**
+music-bot-embed-like: **Like**
+
+profile-embed-display-name: **Display name of Server**
+profile-embed-info: 's Profile info
+profile-embed-joined-at: Joined at
+profile-embed-is-admin: is Mod?
+
+school-meal-incorrect-date-type: Incorrect date type (example: 20220828)
+school-meal-embed-title: School Meal
+school-meal-embed-today: 's meal
+school-meal-embed-no-data: nothing
+school-meal-embed-breakfast: :fork_knife_plate: Breakfast
+school-meal-embed-lunch: :fork_knife_plate: Lunch
+school-meal-embed-dinner: :fork_knife_plate: Dinner
+school-meal-embed-kcal: Kcal
+
+search-book-value-error-1: 0 이상의 값을 입력하주세요.
+search-book-search-result: result of search
+search-book-search-no-result-1: no search result
+search-book-search-no-result-2: no result for search word:
+search-book-embed-field-overflowed: Search result is too big!
+search-book-embed-field-author: Author
+search-book-embed-field-publisher: Publisher
+search-book-embed-field-price: Price
+search-book-embed-field-published-date: Published Date
+search-book-embed-field-isbn: ISBN
+search-book-embed-field-status: Status
+search-book-embed-field-book-details: Details
+
+memo-button-text-download: Download
+memo-button-text-remove: Remove
+memo-write-modal-title: Write new memo
+memo-embed-title: ✨ Found memo!
+memo-embed-description: Memo
+memo-embed-field-memo-num: m.Num
+memo-embed-field-memo-name: Memo name
+memo-embed-field-memo-time: Memo Time
+memo-embed-field-memo-content: Memo Contents
+memo-error-name-already-exist: name already exists!
+memo-error-not-found: Couldn't find memo..
+memo-success-write: Write memo!
+memo-download-success: Sent memo file to you're private dm<br>Check you're private DM!
+memo-private-dm-message: Here, is it you're requested file?
+
+error-embed-title: :skull:  An Error occurred!
+error-embed-description-part-1: Please contect the Developer<br>log saved at logs/error_
+error-embed-description-part-2: .log.
+
+message-not-guild-6-11: , おはようございます。
+message-not-guild-12-18: , こんにちは。
+message-not-guild-19-23: , こんばんは。
+message-not-guild-else: , お休みなさい。
+
+PART1_DEVELOPER_NAME: 17th
+PART1_DEVELOPER_PROFILE_URL: https://images-ext-2.discordapp.net/external/WfO_TJDQ71XHUwZ_-OW3AnGMAB90HbPO4gaac6An6dE/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/574411212599590940/a_90e8f0035e42b97ecb16c6ede5cde185.gif
+PART2_DEVELOPER_NAME: Donggeon
+PART3_DEVELOPER_NAME: Harang
+PART4_DEVELOPER_NAME: Jimin
+
+NONE: (None)
