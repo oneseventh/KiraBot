@@ -40,7 +40,7 @@ async def get_audit_log(guild, audit_type, member_id):
         runtime = datetime.datetime.now()
         runtime = int(time.mktime(runtime.timetuple()))
         if (runtime - logtime) <= 2:  # 현재 시간과 마지막 member_move 감사로그의 시간을 비교함
-            return log.user
+            return log.user.id
         else:
             return member_id
 
