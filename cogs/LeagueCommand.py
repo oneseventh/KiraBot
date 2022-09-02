@@ -17,11 +17,9 @@ class LeagueCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    guild_id = main.GUILD_ID
-
     @nextcord.slash_command(name="대회", description="contestkorea.com에서 대회 목록을 불러옵니다. - 개발 {0}, {1}"
                             .format(kira_language.get_text("PART1_DEVELOPER_NAME"),
-                                    kira_language.get_text("PART3_DEVELOPER_NAME")), guild_ids=[guild_id])
+                                    kira_language.get_text("PART3_DEVELOPER_NAME")))
     async def _league(self, interaction: Interaction,
                       arg: str = nextcord.SlashOption(name="종류", choices={"인기": "인기", "추천": "추천",
                                                                           "최신": "최신", "전체": "전체"},

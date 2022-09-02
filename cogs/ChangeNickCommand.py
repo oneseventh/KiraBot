@@ -22,7 +22,7 @@ class ChangeNickCommand(commands.Cog):
 
     @nextcord.slash_command(name="닉변", description="닉네임을 변경합니다. - 개발 {0}, {1}"
                             .format(kira_language.get_text("PART1_DEVELOPER_NAME"),
-                                    kira_language.get_text("PART3_DEVELOPER_NAME")), guild_ids=[guild_id])
+                                    kira_language.get_text("PART3_DEVELOPER_NAME")), guild_ids=guild_id)
     async def _change_nick(self, interaction: Interaction,
                            target: nextcord.Member = nextcord.SlashOption(
                                name="대상",

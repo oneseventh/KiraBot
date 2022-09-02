@@ -25,7 +25,7 @@ class MealCommand(commands.Cog):
     neis_api_key = parse_authkey.get_auth_key('neis-api-key')
 
     @nextcord.slash_command(name="meal", description="✨ 학교의 급식을 확인할 수 있어! (기본값은 인천정보과학고등학교 입니다.) - 개발 {0}"
-                            .format(kira_language.get_text("PART1_DEVELOPER_NAME")), guild_ids=[guild_id])
+                            .format(kira_language.get_text("PART1_DEVELOPER_NAME")), guild_ids=guild_id)
     async def check_meal(self, interaction: Interaction,
                          date: int = nextcord.SlashOption(name="날짜", description="✨ 날짜를 입력해 줘! (예. 20220828)",
                                                           min_value=19700101, max_value=20380119, required=False),

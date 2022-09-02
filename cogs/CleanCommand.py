@@ -20,7 +20,7 @@ class CleanCommand(commands.Cog):
     # 청소 기능
     @nextcord.slash_command(name="청소", description="메시지를 청소합니다. - 개발 {0}, {1}"
                             .format(kira_language.get_text("PART1_DEVELOPER_NAME"),
-                                    kira_language.get_text("PART3_DEVELOPER_NAME")), guild_ids=[guild_id])
+                                    kira_language.get_text("PART3_DEVELOPER_NAME")), guild_ids=guild_id)
     async def _clean(self, interaction: Interaction,
                      amount: int = nextcord.SlashOption(name="개수",
                                                         description="삭제할 메시지의 개수를 입력해주세요.",

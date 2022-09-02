@@ -21,7 +21,7 @@ class FollowMeCommand(commands.Cog):
 
     @nextcord.slash_command(name="따라해", description="말을 따라합니다. - 개발 {0}, {1}"
                             .format(kira_language.get_text("PART1_DEVELOPER_NAME"),
-                                    kira_language.get_text("PART3_DEVELOPER_NAME")), guild_ids=[guild_id])
+                                    kira_language.get_text("PART3_DEVELOPER_NAME")), guild_ids=guild_id)
     async def _game_odd(self, interaction: Interaction,
                         text: str = nextcord.SlashOption(name="말",
                                                         description="따라할 말을 적어주세요!", required=True)):

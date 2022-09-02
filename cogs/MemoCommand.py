@@ -27,7 +27,7 @@ class MemoCommand(commands.Cog):
     guild_id = main.GUILD_ID
 
     @nextcord.slash_command(name="memo", description="✨ 새로운 메모를 쓰거나 쓴 메모를 확인 할 수 있어요. - 개발 {0}"
-                            .format(kira_language.get_text("PART1_DEVELOPER_NAME"), guild_ids=[guild_id]))
+                            .format(kira_language.get_text("PART1_DEVELOPER_NAME")), guild_ids=guild_id)
     async def memo(self, interaction: Interaction,
                    action: int = nextcord.SlashOption(name="행동", choices={"읽기": 1, "쓰기": 2, "삭제": 3},
                                                       description="✨ 메모를 읽을 지, 메모를 새로 쓸지, 메모를 지울 지 알려줘!",

@@ -17,17 +17,15 @@ class Event(commands.Cog):
 
     guild_id = main.GUILD_ID
 
-    @commands.Cog.listener()
-    async def on_ready(self):  # 봇이 정상적으로 실행되었을 때 Activated! 를 IDE의 터미널에 출력합니다.
-        print("Activated!")
-
     # 메세지가 삭제되었을 때, 선택된 로그채널로 로그메세지를 전송합니다.
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):
         if payload.cached_message.author.bot:  # 봇의 메세지가 삭제되었을 때, 실행하지 않습니다. (즉, 유저 메세지의 로그만 표시됩니다.)
             return
+        if not guild_manager.is_guild_registered(payload.guild_id):
+            return
         now = time.localtime()  # 삭제된 시간을 출력하기위함
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())  # 사용자가 선택한 로그채널의 ID를 가져옵니다.
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(payload.guild_id))  # 사용자가 선택한 로그채널의 ID를 가져옵니다.
         # (채널의ID는 setting.txt에 저장되어 있습니다)
         Embed = nextcord.Embed(title=kira_language.get_text("log-message-deleted-embed-title"),
                                # 삭제된 메세지의 정보를 출력하기 위해 임베드를 생성합니다.(디스코드의 임베드 기능)
@@ -61,7 +59,7 @@ class Event(commands.Cog):
             return
 
         now = time.localtime()
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(self.bot.guild.id))
 
         Embed = nextcord.Embed(title=kira_language.get_text("log-message-edited-embed-title"),
                                # 수정된 메세지의 정보를 출력하기 위해 임베드를 생성합니다.(디스코드의 임베드 기능)

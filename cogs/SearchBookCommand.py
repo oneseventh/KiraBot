@@ -22,7 +22,7 @@ class SearchBookCommand(commands.Cog):
     guild_id = main.GUILD_ID
 
     @nextcord.slash_command(name="search", description="✨ 책 이름을 알려주면 책을 검색해 줄게! - 개발 {0}"
-                            .format(kira_language.get_text("PART1_DEVELOPER_NAME")), guild_ids=[guild_id])
+                            .format(kira_language.get_text("PART1_DEVELOPER_NAME")), guild_ids=guild_id)
     async def search_book(self, interaction: nextcord.Interaction,
                           bookname: str = nextcord.SlashOption(name="이름", description="✨ 책 이름을 입력해 줘!", min_length=3),
                           page: int = nextcord.SlashOption(name="페이지", description="✨ 검색할 페이지를 알려 줘! (선택)",
