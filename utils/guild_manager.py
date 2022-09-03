@@ -16,7 +16,6 @@ def get_current_log_channel_id(gid: int):
     길드에 설정된 로그 채널 ID를 가져옵니다.
     :return: 로그 채널 ID (int)
     """
-    print("Guild ID: {0}".format(gid))
     for cid in channel_id:
         if cid == "{0}:{1}".format(str(gid), cid[cid.index(":") + 1:]):
             return int(cid[cid.index(":") + 1:])
@@ -30,23 +29,32 @@ def is_guild_registered(gid: int):
     return False
 
 
-# def set_log_channel(gid: int, cid: int):
-#     """
-#     로그 채널을 설정합니다.
-#     :param gid: 바꿀 길드 ID
-#     :param cid: 대상의 채널 ID (int)
-#     """
-#     if get_current_log_channel_id(gid) is None:
-#         channel_id.append("{0}:{1}".format(gid, cid))
-#         with open("./setting.txt", 'w') as setting_file:
-#             setting_file.write("{0}:{1}".format(gid, cid))
-#     else:
-#         channel_id.remove("{0}:{1}".format(gid, get_current_log_channel_id(gid)))
-#         channel_id.append("{0}:{1}".format(gid, cid))
-#         with open("./settings.txt", 'r') as setting_read:
-#             with open("./setting.txt", 'w') as setting_file:
-#                 for setting in setting_read:
-#                     if setting == "{0}:{1}".format(gid, get_current_log_channel_id(gid)):
+def set_log_channel(gid: int, cid: int, isready: bool = False):
+    """
+    로그 채널을 설정합니다.
+    :param gid: 바꿀 길드 ID
+    :param cid: 대상의 채널 ID (int)
+    :param isready: 준비 단계 인가요?
+    """
+    if isready:
+        channel_id.append("{0}:{1}".format(gid, cid))
+    else:
+        if get_current_log_channel_id(gid) is None:
+            channel_id.append("{0}:{1}".format(gid, cid))
+            with open("./setting.txt", 'a') as setting_file:
+                setting_file.write("{0}:{1}\n".format(gid, cid))
+        else:
+            before = get_current_log_channel_id(gid)
+            channel_id.remove("{0}:{1}".format(gid, before))
+            channel_id.append("{0}:{1}".format(gid, cid))
+            with open("./setting.txt", 'r') as setting_read:
+                origin = ""
+                for setting in setting_read.readlines():
+                    origin += "{0}".format(setting.replace(str(before), str(cid)))
+                with open("./setting.txt", 'w') as setting_file:
+                    setting_file.truncate(0)
+                    setting_file.write(origin)
+
 
 def get_all_log_channel():
     setting_file = open("./setting.txt", 'r')

@@ -21,7 +21,7 @@ class ReadyMessageEvent(commands.Cog):
         for guild in self.bot.guilds:
             main.GUILD_ID.append(guild.id)
         for value in guild_manager.get_all_log_channel():
-            guild_manager.set_log_channel(value[:value.index(":")], value[value.index(":")+1:])
+            guild_manager.set_log_channel(value[:value.index(":")], value[value.index(":")+1:], True)
         await self.bot.change_presence(activity=nextcord.Game(name="✨ 이쁘게 반짝반짝"))
         print('Bot Ready!')
 

@@ -59,7 +59,7 @@ class Event(commands.Cog):
             return
 
         now = time.localtime()
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(self.bot.guild.id))
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(before.guild.id))
 
         Embed = nextcord.Embed(title=kira_language.get_text("log-message-edited-embed-title"),
                                # 수정된 메세지의 정보를 출력하기 위해 임베드를 생성합니다.(디스코드의 임베드 기능)
@@ -91,7 +91,7 @@ class Event(commands.Cog):
     # 서버 정보가 수정되었을 때, 선택된 로그채널로 로그메세지를 전송합니다
     @commands.Cog.listener()
     async def on_guild_update(self, before, after):
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(before.guild.id))
         now = time.localtime()
         log_checking = False
 
@@ -190,7 +190,7 @@ class Event(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(member.guild.id))
 
         log_embed = nextcord.Embed(title=kira_language.get_text("log-join-embed-title"), color=0x7FFF91)
         # alert.embed.title.server.connect: Member Joined
@@ -209,7 +209,7 @@ class Event(commands.Cog):
     # 유저, 봇이 서버에서 나갔을 때, 선택된 로그채널로 로그메세지를 전송합니다.
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(member.guild.id))
         now = time.localtime()
 
         log_embed = nextcord.Embed(title=kira_language.get_text("log-left-embed-date"), color=0xFF5544)
@@ -229,7 +229,7 @@ class Event(commands.Cog):
     # 서버에서 초대코드가 생성되었을 때, 선택된 로그채널로 로그메세지를 전송합니다.
     @commands.Cog.listener()
     async def on_invite_create(self, invite):
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(invite.guild.id))
         Embed = nextcord.Embed(title=kira_language.get_text("log-invite-embed-title"),
                                description=kira_language.get_text("log-invite-embed-description")
                                .format(invite.channel.id), color=0xC1FFDF)
@@ -263,7 +263,7 @@ class Event(commands.Cog):
     # 서버에서 초대코드가 삭제되었을 때, 선택된 로그채널로 로그메세지를 전송합니다.
     @commands.Cog.listener()
     async def on_invite_delete(self, invite):
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(invite.guild.id))
         now = time.localtime()
         log_embed = nextcord.Embed(title=kira_language.get_text("log-invite-delete-embed-title"),
                                    description=kira_language.get_text("log-invite-delete-embed-description")
@@ -285,7 +285,7 @@ class Event(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):
         global log_embed
-        log_channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        log_channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(channel.guild.id))
         if str(channel.type) == 'text':
             creater = ""
             async for entry in channel.guild.audit_logs(action=nextcord.AuditLogAction.channel_create, limit=1):
@@ -379,7 +379,7 @@ class Event(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, channel):
         global log_embed
-        log_channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        log_channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(channel.guild.id))
         now = time.localtime()
         if str(channel.type) == 'text':
             deleter = ""
@@ -474,7 +474,7 @@ class Event(commands.Cog):
     # 채널이 수정되었을 때, 선택된 로그채널로 로그메세지를 전송합니다.
     @commands.Cog.listener()
     async def on_guild_channel_update(self, before, after):
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(before.guild.id))
         checking = False
         global embed
         if str(channel.type) == 'category':
@@ -523,7 +523,7 @@ class Event(commands.Cog):
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         global embed
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(member.guild.id))
         checking = False
 
         if before.channel != after.channel:
@@ -631,7 +631,7 @@ class Event(commands.Cog):
     # 비공개 채널이 수정되었을 때, 선택된 로그채널로 로그메세지를 전송합니다.
     @commands.Cog.listener()
     async def on_private_channel_update(self, before, after):
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(before.guild.id))
         checking = False
 
         if str(channel.type) == 'category':
@@ -671,7 +671,7 @@ class Event(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_role_create(self, role):
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(role.guild.id))
         embed = nextcord.Embed(title=f"Role created [{role.name}]", color=0x00FF22)
         # alert.embed.title.role.created: Role created [{0}]
         embed.add_field(name="ID", value=f"```diff\n+ {role.id} (role) \n+ {int(role.guild.id)} (guild)```",
@@ -685,7 +685,7 @@ class Event(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role):
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(role.guild.id))
         embed = nextcord.Embed(title=f"<Role deleted [{role.name}]", color=0xFF0000)
         # alert.embed.title.role.deleted: Role deleted [{0}]
         embed.add_field(name="ID", value=f"```diff\n+ {role.id} (role) \n+ {int(role.guild.id)} (guild)```",
@@ -699,7 +699,7 @@ class Event(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_role_update(self, before, after):
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(before.guild.id))
         checking = False
         embed = nextcord.Embed(title=f"Role updated [{before.name}]", color=after.colour)
         # alert.embed.title.role.updated: Role updated [{0}]
@@ -738,7 +738,7 @@ class Event(commands.Cog):
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         global checking
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(before.guild.id))
         embed = nextcord.Embed(title=f"Profile(server) updated <@{after.id}>", color=0xD4FF7D)
         # alert.embed.title.server.profile.updated: Profile(server) updated <@{0}>
         checking = False
@@ -757,7 +757,7 @@ class Event(commands.Cog):
 
     @commands.Cog.listener()
     async def on_user_update(self, before, after):
-        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id())
+        channel = self.bot.get_channel(guild_manager.get_current_log_channel_id(before.guild.id))
         embed = nextcord.Embed(title=f"Profile updated {after.id}", color=0xD4FF7D)
         # alert.embed.title.personal.profile.updated: Profile updated <@{0}>
         checking = False

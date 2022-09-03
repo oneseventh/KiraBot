@@ -23,9 +23,10 @@ class LogCommands(commands.Cog):
     async def logging_channel(self, interaction: nextcord.Interaction, channel: nextcord.TextChannel =
                               nextcord.SlashOption(name="채널", description="로깅할 채널", required=True)):
         guild_manager.set_log_channel(interaction.guild.id, channel.id)
-        embed = nextcord.Embed(title=f"<#{channel.id}> 채널에 로그를 저장합니다.", color=0x5947FF)
+        embed = nextcord.Embed(title=f"이 채널에 로그를 저장합니다.", description="설정된 채널 <#{0}>"
+                               .format(channel.id), color=0x5947FF)
         embed.add_field(name="Selected channel ID",
-                        value=f"```diff\n+ {guild_manager.get_current_log_channel_id(channel.id)}```",
+                        value=f"```diff\n+ {channel.id}```",
                         inline=False)
         embed.set_footer(text=f"Request by {interaction.user} ・ Developed by 동건#3038",
                          icon_url=interaction.user.display_avatar)
