@@ -1,6 +1,6 @@
 """
     #제작: @17th
-    #최종 수정일: 2022년 09월 01일
+    #최종 수정일: 2022년 09월 04일
 """
 
 import sqlite3
@@ -26,26 +26,30 @@ class MemoCommand(commands.Cog):
 
     guild_id = main.GUILD_ID
 
-    @nextcord.slash_command(name="memo", description="✨ 새로운 메모를 쓰거나 쓴 메모를 확인 할 수 있어요. - 개발 {0}"
+    @nextcord.slash_command(name="메모", description="✨ 새로운 메모를 쓰거나 쓴 메모를 확인 할 수 있어요. - 개발 {0}"
                             .format(kira_language.get_text("PART1_DEVELOPER_NAME")), guild_ids=guild_id)
-    async def memo(self, interaction: Interaction,
-                   action: int = nextcord.SlashOption(name="행동", choices={"읽기": 1, "쓰기": 2, "삭제": 3},
-                                                      description="✨ 메모를 읽을 지, 메모를 새로 쓸지, 메모를 지울 지 알려줘!",
-                                                      required=True)):
-        if action == 1:
-            await interaction.response.send_message(f"{kira_language.get_text('memo-list-info-text')}",
-                                                    view=MemoListView(interaction.user.id), ephemeral=True)
-        elif action == 2:
-            if await get_memo_count(interaction) >= 10:
-                return await alert.error(interaction, kira_language.get_text('memo-error-created-max'))
-            await interaction.response.send_modal(WriteMemo())
-        elif action == 3:
-            await alert.developing(interaction)
+    async def _memo(self, interaction: Interaction):
+        pass
+
+    @_memo.subcommand(name="읽기", description="✨ 쓴 메모를 읽어요.")
+    async def read(self, interaction: Interaction):
+        await interaction.response.send_message(f"{kira_language.get_text('memo-list-info-text')}",
+                                                view=MemoListView(interaction.user.id), ephemeral=True)
+
+    @_memo.subcommand(name="쓰기", description="✨ 메모를 쓸 수 있어요.")
+    async def _write(self, interaction: Interaction):
+        if await get_memo_count(interaction.user.id) >= 10:
+            return await alert.error(interaction, kira_language.get_text('memo-error-created-max'))
+        return await interaction.response.send_modal(WriteMemo())
 
 
 class MemoList(nextcord.ui.Select):
     def __init__(self, user_id: int):
         memo_list = []
+        if get_memo_count(user_id) == 0:
+            memo_list.append(nextcord.SelectOption(label="메모가 없어요!",
+                                                   description="/메모 쓰기로 메모를 써보세요!", value="X"))
+
         for memo in get_memo_list(user_id):
             if len(memo[1]) > 30:
                 memo_list.append(
@@ -55,7 +59,8 @@ class MemoList(nextcord.ui.Select):
         super().__init__(placeholder="✨ 읽을 메모를 선택해 줘!", min_values=1, max_values=1, options=memo_list)
 
     async def callback(self, interaction: Interaction):
-        await get_memo(interaction, self.values[0])
+        if self.values[0] != "X":
+            await get_memo(interaction, self.values[0])
 
 
 class MemoListView(nextcord.ui.View):
@@ -81,8 +86,7 @@ class MemoButton(nextcord.ui.View):
         await remove_memo(interaction, interaction.user.id, self.memo_name)
 
 
-async def get_memo_count(interaction: Interaction):
-    user_id = interaction.user.id
+def get_memo_count(user_id: int):
     conn = sqlite3.connect('././memo.db', isolation_level=None)
     c = conn.cursor()
     c.execute("SELECT COUNT(memo_name) FROM memo WHERE user_id = {0}".format(user_id))
@@ -181,7 +185,6 @@ class WriteMemo(nextcord.ui.Modal):
         self.memo_content = ui.TextInput(label="메모할 내용을 적어줘!",
                                          max_length=2000, style=nextcord.TextInputStyle.paragraph, required=True)
         self.add_item(self.memo_content)
-        self.lang = kira_language.get_current_lang()
 
     async def callback(self, interaction: nextcord.Interaction) -> None:
         if check_memo_exist(interaction.user.id, self.memo_name.value):

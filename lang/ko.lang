@@ -19,6 +19,8 @@ change-nick-embed-success: 닉네임 변경 성공!<br>{0}의 닉네임을 ``{1}
 
 clean-alert-success: 메시지 ``{0}개``를 삭제 했어!
 
+music-error-alerady-music-use: 내가 다른 음성 채널에 접속 중일때는 사용할 수 없어..<br>내 몸은 하나라구!
+music-error-alerady-use-tts: 지금은 다른 사람의 말을 따라 읽는 중이야!<br>조금만 기다려 줘!
 music-error-message-not-found: {}에 대한 결과를 찾을 수 없습니다.
 music-error-message-not-matches: {}에 일치 하는 결과를 찾을 수 없습니다.
 music-error-message-could-not-fetch: {}를 가져올 수 없어요.
@@ -29,6 +31,7 @@ music-duration-seconds: {0}초
 music-alert-queue-empty: 대기열이 비어 있어
 music-alert-join: <#{0}> 채널에 입장 했어!
 music-alert-join-error: 먼저 음성 채널에 접속 해줘!
+music-alert-tts-error: TTS 중에는 나를 부를 수 없어. 잠시만 기다려 줘!
 music-alert-already-pause: 노래가 이미 멈춰 있어!
 music-alert-pause: 노래를 멈췄어!
 music-alert-already-resume: 노래가 이미 재생 중 이야!

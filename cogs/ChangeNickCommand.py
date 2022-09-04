@@ -3,15 +3,13 @@
     #최종 수정일: 2022년 09월 01일
 """
 
-import random
-
 import nextcord
 from nextcord import Interaction
 from nextcord.ext import commands
 
 import main
-from utils import kira_language
 from utils import alert
+from utils import kira_language
 
 
 class ChangeNickCommand(commands.Cog):

@@ -1,6 +1,6 @@
 """
     #제작: @17th, @donggeon
-    #최종 수정일: 2022년 09월 02일
+    #최종 수정일: 2022년 09월 04일
 """
 
 import main
@@ -80,7 +80,7 @@ async def get_audit_log(guild, audit_type, member_id):
         logtime = int(time.mktime(logtime.timetuple()))
         runtime = datetime.datetime.now()
         runtime = int(time.mktime(runtime.timetuple()))
-        if (runtime - logtime) <= 2:  # 현재 시간과 마지막 member_move 감사로그의 시간을 비교함
+        if (runtime - logtime) <= 5:  # 현재 시간과 마지막 member_move 감사로그의 시간을 비교함
             return log.user.id
         else:
             return member_id

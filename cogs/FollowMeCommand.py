@@ -24,7 +24,7 @@ class FollowMeCommand(commands.Cog):
                                     kira_language.get_text("PART3_DEVELOPER_NAME")), guild_ids=guild_id)
     async def _game_odd(self, interaction: Interaction,
                         text: str = nextcord.SlashOption(name="말",
-                                                        description="따라할 말을 적어주세요!", required=True)):
+                                                         description="따라할 말을 적어주세요!", required=True)):
         await interaction.response.send_message(text)
 
 

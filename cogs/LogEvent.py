@@ -1,6 +1,6 @@
 """
     #제작: @donggeon  #수정: @17th
-    #최종 수정일: 2022년 09월 01일
+    #최종 수정일: 2022년 09월 04일
 """
 
 from nextcord.ext import commands
@@ -598,29 +598,29 @@ class Event(commands.Cog):
             if before.deaf is not after.deaf:
                 if before.deaf is True:
                     embed.add_field(name=kira_language.get_text("log-guild-voice-embed-field-deaf"),
-                                    value=f"``YES`` → ``NO``", inline=False)
+                                    value=f"``NO`` → ``YES``", inline=False)
                     # alert.embed.field.title.voice.status.updated.deaf: Deaf
                 else:
                     embed.add_field(name=kira_language.get_text("log-guild-voice-embed-field-deaf"),
-                                    value=f"``NO`` → ``YES``", inline=False)
+                                    value=f"``YES`` → ``NO``", inline=False)
                     # alert.embed.field.title.voice.status.updated.deaf: Deaf
             if before.mute is not after.mute:
                 if before.mute is True:
                     embed.add_field(name=kira_language.get_text("log-guild-voice-embed-field-mute"),
-                                    value=f"``YES`` → ``NO``", inline=False)
+                                    value=f"``NO`` → ``YES``", inline=False)
                     # alert.embed.field.title.voice.status.updated.mute: Mute
                 else:
                     embed.add_field(name=kira_language.get_text("log-guild-voice-embed-field-mute"),
-                                    value=f"``NO`` → ``YES``", inline=False)
+                                    value=f"``YES`` → ``NO``", inline=False)
                     # alert.embed.field.title.voice.status.updated.mute: Mute
             if before.afk is not after.afk:
                 if before.afk is True:
                     embed.add_field(name=kira_language.get_text("log-guild-voice-embed-field-afk"),
-                                    value=f"``YES`` → ``NO``", inline=False)
+                                    value=f"``NO`` → ``YES``", inline=False)
                     # alert.embed.field.title.voice.status.updated.afk: AFK
                 else:
                     embed.add_field(name=kira_language.get_text("log-guild-voice-embed-field-afk"),
-                                    value=f"``NO`` → ``YES``", inline=False)
+                                    value=f"``YES`` → ``NO``", inline=False)
                     # alert.embed.field.title.voice.status.updated.afk: AFK
             checking = True
         if checking:
