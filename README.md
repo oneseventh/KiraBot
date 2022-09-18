@@ -51,8 +51,7 @@ KiraBot은 한국의 학생 3명이 모여 만든 디스코드 봇입니다!<br>
 
 📖 ``/로그 [channel]`` **채팅에 대한 로그를 적어둘 채널을 설정합니다.**<br>
    - 아래 사진과 같이 채팅에 대한 로그를 볼 수 있습니다. (메세지 수정, 삭제, 채널이동, 역할업데이트, 역할생성, 초대코드 등등)<br>
-<img src="https://user-images.githubusercontent.com/80456015/190886902-739048f8-77a8-4773-ab44-cff0a9877277.png"/>
-<img src="https://user-images.githubusercontent.com/80456015/190887061-785a3f90-573a-4d7e-bf7f-bea52fb3d6bd.png"/><br><br>
+<img src="https://user-images.githubusercontent.com/80456015/190886902-739048f8-77a8-4773-ab44-cff0a9877277.png"/> <img src="https://user-images.githubusercontent.com/80456015/190887061-785a3f90-573a-4d7e-bf7f-bea52fb3d6bd.png"/>
 <img src="https://user-images.githubusercontent.com/80456015/190887089-66902a64-29c9-47af-8588-d4ebb9019bd1.png"/><br><br>
 
 
