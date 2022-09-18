@@ -48,7 +48,13 @@ KiraBot은 한국의 학생 3명이 모여 만든 디스코드 봇입니다!<br>
 📖 ``/search [book_name] [page]`` **- 책을 검색 합니다.**<br><br>
 
 <h2><a href="https://github.com/zzxz46412">@donggeon</a> Part</h2><br>
+📖 ``/로그 [channel]`` **채팅에 대한 로그를 적어둘 채널을 설정합니다.**
+   - 아래 사진과 같이 채팅에 대한 로그를 볼 수 있습니다. (메세지 수정, 삭제, 채널이동, 역할업데이트, 역할생성, 초대코드 등등)
+<br><img src="https://user-images.githubusercontent.com/80456015/190886902-739048f8-77a8-4773-ab44-cff0a9877277.png"/><br><br>
+
+
 <h2><a href="https://github.com/congachu">@congachu</a> Part</h2><br>
+
 
 ![clean](https://user-images.githubusercontent.com/106534469/187964960-605038ac-d3d5-4caa-8f48-f7e0cd915f1c.png)<br><br>
 🧹 ``/청소 [number]`` - **최대 99개**의 채팅을 청소합니다.<br><br><br>
